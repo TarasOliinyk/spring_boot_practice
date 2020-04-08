@@ -1,12 +1,10 @@
-package com.lits.model;
+package com.springboot.practice.model;
 
 import javax.persistence.*;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
 @Entity
-@Table
 public class Teacher {
 
     @Id
@@ -19,8 +17,17 @@ public class Teacher {
     @Column
     private String lastName;
 
+    @Column
+    public Integer age;
+
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "teacher")
-    private List<Course> courses = new ArrayList<>();
+    private List<Course> courses;
+
+    public Teacher(String firstName, String lastName, Integer age) {
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.age = age;
+    }
 
     public Teacher() {
     }
@@ -49,6 +56,14 @@ public class Teacher {
         this.lastName = lastName;
     }
 
+    public Integer getAge() {
+        return age;
+    }
+
+    public void setAge(Integer age) {
+        this.age = age;
+    }
+
     public List<Course> getCourses() {
         return courses;
     }
@@ -57,12 +72,14 @@ public class Teacher {
         this.courses = courses;
     }
 
+
     @Override
     public String toString() {
         return "Teacher {" +
                 "id=" + id +
                 ", firstName='" + firstName + '\'' +
                 ", lastName='" + lastName + '\'' +
+                ", age=" + age +
                 '}';
     }
 
@@ -71,13 +88,14 @@ public class Teacher {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Teacher teacher = (Teacher) o;
-        return id.equals(teacher.id) &&
+        return Objects.equals(id, teacher.id) &&
                 Objects.equals(firstName, teacher.firstName) &&
-                Objects.equals(lastName, teacher.lastName);
+                Objects.equals(lastName, teacher.lastName) &&
+                Objects.equals(age, teacher.age);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, firstName, lastName, courses);
+        return Objects.hash(id, firstName, lastName, age);
     }
 }

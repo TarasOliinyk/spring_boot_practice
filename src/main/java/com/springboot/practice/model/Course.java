@@ -1,10 +1,10 @@
-package com.lits.model;
+package com.springboot.practice.model;
 
 import javax.persistence.*;
+import java.util.List;
 import java.util.Objects;
 
 @Entity
-@Table
 public class Course {
 
     @Id
@@ -14,8 +14,12 @@ public class Course {
     @Column
     private String name;
 
-    @ManyToOne
-    private Teacher teacher;
+    @ManyToMany
+    private List<Teacher> teachers;
+
+    public Course(String name) {
+        this.name = name;
+    }
 
     public Course() {
     }
@@ -36,12 +40,12 @@ public class Course {
         this.name = name;
     }
 
-    public Teacher getTeacher() {
-        return teacher;
+    public List<Teacher> getTeachers() {
+        return teachers;
     }
 
-    public void setTeacher(Teacher teacher) {
-        this.teacher = teacher;
+    public void setTeachers(List<Teacher> teachers) {
+        this.teachers = teachers;
     }
 
     @Override
@@ -57,7 +61,7 @@ public class Course {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Course course = (Course) o;
-        return id.equals(course.id) &&
+        return Objects.equals(id, course.id) &&
                 Objects.equals(name, course.name);
     }
 
