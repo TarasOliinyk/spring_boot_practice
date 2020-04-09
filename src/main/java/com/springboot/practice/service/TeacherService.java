@@ -1,7 +1,8 @@
 package com.springboot.practice.service;
 
+import com.springboot.practice.model.Course;
 import com.springboot.practice.model.Teacher;
-import org.springframework.data.domain.Sort;
+import com.springboot.practice.service.criteria.TeacherSortingParameter;
 
 import java.util.List;
 
@@ -13,9 +14,11 @@ public interface TeacherService {
 
     List<Teacher> getAllTeachers();
 
-    List<Teacher> getAllTeachersSortedBy(Sort sort);
+    List<Teacher> getAllTeachersSortedBy(TeacherSortingParameter sortingParameter);
 
     Teacher getTeacherAssignedToCourse(Integer courseId);
+
+    List<Course> getAllCoursesAssignedToTeacher(Teacher teacher);
 
     void deleteTeacher(Integer teacherId);
 }

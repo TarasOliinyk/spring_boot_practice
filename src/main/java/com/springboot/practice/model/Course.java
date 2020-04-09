@@ -1,6 +1,10 @@
 package com.springboot.practice.model;
 
+import com.springboot.practice.utils.LocalDatePersistenceConverter;
+
 import javax.persistence.*;
+import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -14,11 +18,25 @@ public class Course {
     @Column
     private String name;
 
-    @ManyToMany
-    private List<Teacher> teachers;
+    @ManyToMany(fetch = FetchType.EAGER)
+    private List<Teacher> teachers = new ArrayList<>();
+
+    @Column
+    @Convert(converter = LocalDatePersistenceConverter.class)
+    private LocalDate startDate;
+
+    @Column
+    @Convert(converter = LocalDatePersistenceConverter.class)
+    private LocalDate endDate;
 
     public Course(String name) {
         this.name = name;
+    }
+
+    public Course(String name, LocalDate startDate, LocalDate endDate) {
+        this.name = name;
+        this.startDate = startDate;
+        this.endDate = endDate;
     }
 
     public Course() {
@@ -48,11 +66,29 @@ public class Course {
         this.teachers = teachers;
     }
 
+    public LocalDate getStartDate() {
+        return startDate;
+    }
+
+    public void setStartDate(LocalDate startDate) {
+        this.startDate = startDate;
+    }
+
+    public LocalDate getEndDate() {
+        return endDate;
+    }
+
+    public void setEndDate(LocalDate endDate) {
+        this.endDate = endDate;
+    }
+
     @Override
     public String toString() {
         return "Course {" +
                 "id=" + id +
                 ", name='" + name + '\'' +
+                ", startDate='" + startDate + '\'' +
+                ", endDate='" + endDate + '\'' +
                 '}';
     }
 

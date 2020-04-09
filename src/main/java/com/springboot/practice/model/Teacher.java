@@ -1,6 +1,7 @@
 package com.springboot.practice.model;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -20,8 +21,8 @@ public class Teacher {
     @Column
     public Integer age;
 
-    @OneToMany(fetch = FetchType.EAGER, mappedBy = "teacher")
-    private List<Course> courses;
+    @ManyToMany(fetch = FetchType.EAGER, mappedBy = "teachers")
+    private List<Course> courses = new ArrayList<>();
 
     public Teacher(String firstName, String lastName, Integer age) {
         this.firstName = firstName;

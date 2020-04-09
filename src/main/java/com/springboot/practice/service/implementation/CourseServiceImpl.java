@@ -6,6 +6,8 @@ import com.springboot.practice.repository.CourseRepository;
 import com.springboot.practice.service.CourseService;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -24,26 +26,34 @@ public class CourseServiceImpl implements CourseService {
     }
 
     @Override
-    public Course getCourse(Integer id) {
-        return courseRepository.findCourseById(id);
+    public Course createCourseWithStartAndEndDates(String courseName, LocalDate startDate, LocalDate endDate) {
+        return courseRepository.save(new Course(courseName, startDate, endDate));
     }
 
     @Override
-    public List<Course> getAllCourses() {
-        return courseRepository.findAllCourses();
-    }
-
-    @Override
-    public Course assignTeachersToCourse(Integer courseId, List<Teacher> teachers) {
-        Course course = getCourse(courseId);
-        course.setTeachers(teachers);
+    public Course updateCourse(Course course) {
         return courseRepository.save(course);
     }
 
     @Override
-    public Course unassignTeacherFromCourse(Integer courseId, Teacher teacher) {
-        Course course = getCourse(courseId);
-        getCourse(courseId).getTeachers().remove(teacher);
+    public Course getCourse(Integer id) {
+        return courseRepository.findOneById(id);
+    }
+
+    @Override
+    public List<Course> getAllCourses() {
+        return courseRepository.findAll();
+    }
+
+    @Override
+    public Course assignTeacherToCourse(Course course, Teacher teacher) {
+        course.getTeachers().add(teacher);
+        return courseRepository.save(course);
+    }
+
+    @Override
+    public Course unassignTeacherFromCourse(Course course, Teacher teacher) {
+        course.getTeachers().remove(teacher);
         return courseRepository.save(course);
     }
 
@@ -54,10 +64,30 @@ public class CourseServiceImpl implements CourseService {
     }
 
     @Override
-    public List<Course> getAllCoursesAssignedToTeacher(Integer teacherId) {
-        return courseRepository.findAllByTeacher(teacherId);
-//        return getAllCourses().stream().filter(course -> course.getTeacher().getId().equals(teacherId))
-//                .collect(Collectors.toList());
+    public List<Course> getNotStartedCourses() {
+        return courseRepository.findAllByStartDateGreaterThan(LocalDate.now());
+    }
+
+    @Override
+    public List<Course> getFinishedCourses() {
+        return courseRepository.findAllByEndDateLessThan(LocalDate.now());
+    }
+
+    @Override
+    public List<Course> getOngoingCourses() {
+        return courseRepository.findAllByStartDateLessThanAndEndDateGreaterThan(LocalDate.now(), LocalDate.now());
+    }
+
+    @Override
+    public List<Course> getCoursesThatLast(int numberOfDays) {
+        return getAllCourses().stream().filter(
+                course -> ChronoUnit.DAYS.between(course.getStartDate(), course.getEndDate()) == numberOfDays)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<Course> getAllCoursesAssignedToTeacher(Teacher teacher) {
+        return courseRepository.findAllByTeachersContaining(teacher);
     }
 
     @Override
