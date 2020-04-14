@@ -4,7 +4,7 @@ import com.springboot.practice.model.Course;
 import com.springboot.practice.model.Teacher;
 import com.springboot.practice.repository.TeacherRepository;
 import com.springboot.practice.service.TeacherService;
-import com.springboot.practice.service.criteria.TeacherSortingParameter;
+import com.springboot.practice.service.criteria.TeacherSortingCriteria;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
@@ -38,7 +38,7 @@ public class TeacherServiceImpl implements TeacherService {
     }
 
     @Override
-    public List<Teacher> getAllTeachersSortedBy(TeacherSortingParameter sortingParameter) {
+    public List<Teacher> getAllTeachersSortedBy(TeacherSortingCriteria sortingParameter) {
         Sort sort;
 
         switch (sortingParameter) {

@@ -2,6 +2,7 @@ package com.springboot.practice.service;
 
 import com.springboot.practice.model.Course;
 import com.springboot.practice.model.Teacher;
+import com.springboot.practice.service.criteria.CourseCriteria;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -26,11 +27,7 @@ public interface CourseService {
 
     List<Course> getCoursesWithNumberOfAssignedTeachers(int numberOfTeachers);
 
-    public List<Course> getNotStartedCourses();
-
-    public List<Course> getFinishedCourses();
-
-    public List<Course> getOngoingCourses();
+    public List<Course> getFilteredCourses(CourseCriteria criteria);
 
     public List<Course> getCoursesThatLast(int numberOfDays);
 

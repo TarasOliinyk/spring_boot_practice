@@ -4,10 +4,10 @@ import com.springboot.practice.model.Course;
 import com.springboot.practice.model.Teacher;
 import com.springboot.practice.repository.CourseRepository;
 import com.springboot.practice.service.CourseService;
+import com.springboot.practice.service.criteria.CourseCriteria;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
-import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -64,25 +64,31 @@ public class CourseServiceImpl implements CourseService {
     }
 
     @Override
-    public List<Course> getNotStartedCourses() {
-        return courseRepository.findAllByStartDateGreaterThan(LocalDate.now());
-    }
+    public List<Course> getFilteredCourses(CourseCriteria criteria) {
+        List<Course> filteredCourses;
 
-    @Override
-    public List<Course> getFinishedCourses() {
-        return courseRepository.findAllByEndDateLessThan(LocalDate.now());
-    }
-
-    @Override
-    public List<Course> getOngoingCourses() {
-        return courseRepository.findAllByStartDateLessThanAndEndDateGreaterThan(LocalDate.now(), LocalDate.now());
+        switch (criteria) {
+            case NOT_STARTED:
+                filteredCourses = courseRepository.findAllByStartDateGreaterThan(LocalDate.now());
+                break;
+            case FINISHED:
+                filteredCourses = courseRepository.findAllByEndDateLessThan(LocalDate.now());
+                break;
+            case ONGOING:
+                filteredCourses = courseRepository.findAllByStartDateLessThanEqualAndEndDateGreaterThanEqual(LocalDate.now(), LocalDate.now());
+                break;
+            default:
+                throw new IllegalStateException("Unexpected value: " + criteria);
+        }
+        return filteredCourses;
     }
 
     @Override
     public List<Course> getCoursesThatLast(int numberOfDays) {
-        return getAllCourses().stream().filter(
-                course -> ChronoUnit.DAYS.between(course.getStartDate(), course.getEndDate()) == numberOfDays)
-                .collect(Collectors.toList());
+        return courseRepository.findAllByDateDiffBetweenStartDateAndEndDateEqualTo(numberOfDays);
+//        return getAllCourses().stream().filter(
+//                course -> ChronoUnit.DAYS.between(course.getStartDate(), course.getEndDate()) == numberOfDays)
+//                .collect(Collectors.toList());
     }
 
     @Override

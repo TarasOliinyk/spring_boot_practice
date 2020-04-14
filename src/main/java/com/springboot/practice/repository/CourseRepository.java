@@ -2,6 +2,7 @@ package com.springboot.practice.repository;
 
 import com.springboot.practice.model.Course;
 import com.springboot.practice.model.Teacher;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
@@ -21,5 +22,8 @@ public interface CourseRepository extends CrudRepository<Course, Integer> {
 
     List<Course> findAllByEndDateLessThan(LocalDate date);
 
-    List<Course> findAllByStartDateLessThanAndEndDateGreaterThan(LocalDate startDateComparisonDate, LocalDate endDateComparisonDate);
+    List<Course> findAllByStartDateLessThanEqualAndEndDateGreaterThanEqual(LocalDate startDateComparisonDate, LocalDate endDateComparisonDate);
+
+    @Query("SELECT c FROM Course c WHERE function('TIMESTAMPDIFF', DAY, c.startDate, c.endDate) = ?1")
+    List<Course> findAllByDateDiffBetweenStartDateAndEndDateEqualTo(int numberOfDays);
 }

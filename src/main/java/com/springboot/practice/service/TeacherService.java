@@ -2,7 +2,7 @@ package com.springboot.practice.service;
 
 import com.springboot.practice.model.Course;
 import com.springboot.practice.model.Teacher;
-import com.springboot.practice.service.criteria.TeacherSortingParameter;
+import com.springboot.practice.service.criteria.TeacherSortingCriteria;
 
 import java.util.List;
 
@@ -14,7 +14,7 @@ public interface TeacherService {
 
     List<Teacher> getAllTeachers();
 
-    List<Teacher> getAllTeachersSortedBy(TeacherSortingParameter sortingParameter);
+    List<Teacher> getAllTeachersSortedBy(TeacherSortingCriteria sortingParameter);
 
     Teacher getTeacherAssignedToCourse(Integer courseId);
 
