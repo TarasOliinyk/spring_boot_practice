@@ -21,7 +21,7 @@ public class Teacher {
     @Column
     public Integer age;
 
-    @ManyToMany(fetch = FetchType.EAGER, mappedBy = "teachers")
+    @ManyToMany(mappedBy = "teachers")
     private List<Course> courses = new ArrayList<>();
 
     public Teacher(String firstName, String lastName, Integer age) {

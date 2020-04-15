@@ -10,7 +10,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 @Repository
-public interface CourseRepository extends CrudRepository<Course, Integer> {
+public interface CourseRepository extends CrudRepository<Course, Integer>, CustomCourseRepository {
 
     Course findOneById(Integer id);
 

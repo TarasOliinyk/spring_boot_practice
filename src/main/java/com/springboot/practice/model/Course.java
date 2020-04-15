@@ -18,7 +18,7 @@ public class Course {
     @Column
     private String name;
 
-    @ManyToMany(fetch = FetchType.EAGER)
+    @ManyToMany
     private List<Teacher> teachers = new ArrayList<>();
 
     @Column

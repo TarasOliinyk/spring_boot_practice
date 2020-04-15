@@ -9,7 +9,6 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class CourseServiceImpl implements CourseService {
@@ -59,8 +58,9 @@ public class CourseServiceImpl implements CourseService {
 
     @Override
     public List<Course> getCoursesWithNumberOfAssignedTeachers(int numberOfTeachers) {
-        return getAllCourses().stream().filter(course -> course.getTeachers().size() == numberOfTeachers)
-                .collect(Collectors.toList());
+        return courseRepository.findAllByTeachersCount(numberOfTeachers);
+//        return getAllCourses().stream().filter(course -> course.getTeachers().size() == numberOfTeachers)
+//                .collect(Collectors.toList());
     }
 
     @Override

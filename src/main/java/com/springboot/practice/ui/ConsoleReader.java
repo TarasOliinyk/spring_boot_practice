@@ -58,10 +58,10 @@ public class ConsoleReader implements CommandLineRunner {
         System.out.println("TEACHERS:");
         teacherService.getAllTeachers().forEach(t -> System.out.println(t.toString()));
         System.out.println("COURSES ASSIGNED TO Mike:");
-        List<Course> coursesAssignedToMike = teacherService.getAllCoursesAssignedToTeacher(teacherMike);
+        List<Course> coursesAssignedToMike = courseService.getAllCoursesAssignedToTeacher(teacherMike);
         coursesAssignedToMike.forEach(mc -> System.out.println(mc.toString()));
         System.out.println("COURSES ASSIGNED TO Tom:");
-        List<Course> coursesAssignedToTom = teacherService.getAllCoursesAssignedToTeacher(teacherTom);
+        List<Course> coursesAssignedToTom = courseService.getAllCoursesAssignedToTeacher(teacherTom);
         coursesAssignedToTom.forEach(mc -> System.out.println(mc.toString()));
         System.out.println("COURSES THAT HAVE SPECIFIC NUMBER OF ASSIGNED TEACHERS:");
         List<Course> courses = courseService.getCoursesWithNumberOfAssignedTeachers(3);
