@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.List;
 
-@Component
+//@Component
 public class ConsoleReader implements CommandLineRunner {
     private final CourseService courseService;
     private final TeacherService teacherService;

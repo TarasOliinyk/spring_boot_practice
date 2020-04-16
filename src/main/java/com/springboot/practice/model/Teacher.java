@@ -1,5 +1,7 @@
 package com.springboot.practice.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -21,6 +23,7 @@ public class Teacher {
     @Column
     public Integer age;
 
+    @JsonIgnore
     @ManyToMany(mappedBy = "teachers")
     private List<Course> courses = new ArrayList<>();
 

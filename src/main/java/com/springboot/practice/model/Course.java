@@ -1,5 +1,6 @@
 package com.springboot.practice.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.springboot.practice.utils.LocalDatePersistenceConverter;
 
 import javax.persistence.*;
@@ -18,6 +19,7 @@ public class Course {
     @Column
     private String name;
 
+    @JsonIgnore
     @ManyToMany
     private List<Teacher> teachers = new ArrayList<>();
 

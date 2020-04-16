@@ -12,11 +12,11 @@ import javax.persistence.criteria.Root;
 import java.util.List;
 
 @Repository
-public class CourseRepositoryImpl implements CustomCourseRepository {
+public class CustomCourseRepositoryImpl implements CustomCourseRepository {
 
     private final EntityManager entityManager;
 
-    public CourseRepositoryImpl(EntityManager entityManager) {
+    public CustomCourseRepositoryImpl(EntityManager entityManager) {
         this.entityManager = entityManager;
     }
 

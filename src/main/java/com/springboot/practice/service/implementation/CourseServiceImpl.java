@@ -1,5 +1,8 @@
 package com.springboot.practice.service.implementation;
 
+import com.springboot.practice.exceptions.course.CourseNotFoundException;
+import com.springboot.practice.exceptions.course.IllegalCourseArgumentException;
+import com.springboot.practice.exceptions.course.IllegalCourseSearchException;
 import com.springboot.practice.model.Course;
 import com.springboot.practice.model.Teacher;
 import com.springboot.practice.repository.CourseRepository;
@@ -21,12 +24,22 @@ public class CourseServiceImpl implements CourseService {
 
     @Override
     public Course createCourse(String courseName) {
-        return courseRepository.save(new Course(courseName));
+
+        if (courseName != null) {
+            return courseRepository.save(new Course(courseName));
+        } else {
+            throw new IllegalCourseArgumentException();
+        }
     }
 
     @Override
     public Course createCourseWithStartAndEndDates(String courseName, LocalDate startDate, LocalDate endDate) {
-        return courseRepository.save(new Course(courseName, startDate, endDate));
+
+        if (courseName != null && startDate != null && endDate != null) {
+            return courseRepository.save(new Course(courseName, startDate, endDate));
+        } else {
+            throw new IllegalCourseArgumentException();
+        }
     }
 
     @Override
@@ -36,7 +49,7 @@ public class CourseServiceImpl implements CourseService {
 
     @Override
     public Course getCourse(Integer id) {
-        return courseRepository.findOneById(id);
+        return courseRepository.findOneById(id).orElseThrow(CourseNotFoundException::new);
     }
 
     @Override
@@ -78,7 +91,7 @@ public class CourseServiceImpl implements CourseService {
                 filteredCourses = courseRepository.findAllByStartDateLessThanEqualAndEndDateGreaterThanEqual(LocalDate.now(), LocalDate.now());
                 break;
             default:
-                throw new IllegalStateException("Unexpected value: " + criteria);
+                throw new IllegalCourseSearchException("Unexpected value: " + criteria);
         }
         return filteredCourses;
     }

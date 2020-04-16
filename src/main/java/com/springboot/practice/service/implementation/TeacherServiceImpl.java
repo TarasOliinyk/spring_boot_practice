@@ -1,5 +1,8 @@
 package com.springboot.practice.service.implementation;
 
+import com.springboot.practice.exceptions.teacher.IllegalTeacherArgumentException;
+import com.springboot.practice.exceptions.teacher.IllegalTeacherSearchException;
+import com.springboot.practice.exceptions.teacher.TeacherNotFoundException;
 import com.springboot.practice.model.Course;
 import com.springboot.practice.model.Teacher;
 import com.springboot.practice.repository.TeacherRepository;
@@ -9,9 +12,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Spliterator;
-import java.util.Spliterators;
-import java.util.stream.StreamSupport;
 
 @Service
 public class TeacherServiceImpl implements TeacherService {
@@ -24,12 +24,17 @@ public class TeacherServiceImpl implements TeacherService {
 
     @Override
     public Teacher createTeacher(String firstName, String lastName, Integer age) {
-        return teacherRepository.save(new Teacher(firstName, lastName, age));
+
+        if (firstName != null && lastName != null && age != null && age > 0) {
+            return teacherRepository.save(new Teacher(firstName, lastName, age));
+        } else {
+            throw new IllegalTeacherArgumentException();
+        }
     }
 
     @Override
     public Teacher getTeacher(Integer teacherId) {
-        return teacherRepository.findOneById(teacherId);
+        return teacherRepository.findOneById(teacherId).orElseThrow(TeacherNotFoundException::new);
     }
 
     @Override
@@ -49,22 +54,14 @@ public class TeacherServiceImpl implements TeacherService {
                 sort = Sort.by(Sort.Order.desc("age"));
                 break;
             default:
-                throw new IllegalStateException("Unexpected value: " + sortingParameter);
+                throw new IllegalTeacherSearchException("Unexpected value: " + sortingParameter);
         }
         return teacherRepository.findAll(sort);
     }
 
     @Override
-    public Teacher getTeacherAssignedToCourse(Integer courseId) {
-        Spliterator<Teacher> spliterator = Spliterators.spliteratorUnknownSize(teacherRepository.findAll().iterator(), 0);
-        return StreamSupport.stream(spliterator, false).filter(
-                teacher -> teacher.getCourses().stream().anyMatch(course -> course.getId().equals(courseId))).findFirst()
-                .orElseThrow(() -> new RuntimeException(String.format("There is no Teacher assigned to course with id '%s'", courseId)));
-    }
-
-    @Override
-    public List<Course> getAllCoursesAssignedToTeacher(Teacher teacher) {
-        return teacherRepository.findOneById(teacher.getId()).getCourses();
+    public List<Teacher> getAllTeachersAssignedToCourse(Course course) {
+        return teacherRepository.findAllByCoursesContaining(course);
     }
 
     @Override
