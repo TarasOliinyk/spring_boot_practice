@@ -1,9 +1,8 @@
 package com.springboot.practice.controller;
 
+import com.springboot.practice.dto.CourseDTO;
 import com.springboot.practice.dto.TeacherDTO;
 import com.springboot.practice.exceptions.teacher.IllegalTeacherSearchException;
-import com.springboot.practice.model.Course;
-import com.springboot.practice.model.Teacher;
 import com.springboot.practice.service.CourseService;
 import com.springboot.practice.service.TeacherService;
 import com.springboot.practice.service.criteria.TeacherSortingCriteria;
@@ -24,25 +23,25 @@ public class TeacherController {
     }
 
     @PostMapping("/teacher")
-    public ResponseEntity<Teacher> createTeacher(@RequestBody TeacherDTO teacherDTO) {
+    public ResponseEntity<TeacherDTO> createTeacher(@RequestBody TeacherDTO teacherDTO) {
         return ResponseEntity.status(HttpStatus.CREATED).body(teacherService.createTeacher(teacherDTO.getFirstName(),
                 teacherDTO.getLastName(), teacherDTO.getAge()));
     }
 
     @GetMapping("/teacher/{id}")
-    public ResponseEntity<Teacher> getTeacher(@PathVariable(name = "id") Integer id) {
+    public ResponseEntity<TeacherDTO> getTeacher(@PathVariable(name = "id") Integer id) {
         return ResponseEntity.status(HttpStatus.FOUND).body(teacherService.getTeacher(id));
     }
 
     @GetMapping("/teacher/list")
     @ResponseStatus(value = HttpStatus.FOUND)
-    public List<Teacher> getAllTeachers() {
+    public List<TeacherDTO> getAllTeachers() {
         return teacherService.getAllTeachers();
     }
 
-    @GetMapping("/teacher/sorted_by_age/{sortingOrder}")
+    @GetMapping("/teachers/sorted_by_age/{sortingOrder}")
     @ResponseStatus(HttpStatus.OK)
-    public List<Teacher> getAllTeachersSortedByAge(@PathVariable(value = "sortingOrder") String sortingOrder) {
+    public List<TeacherDTO> getAllTeachersSortedByAge(@PathVariable(value = "sortingOrder") String sortingOrder) {
         TeacherSortingCriteria sortingCriteria;
 
         switch (sortingOrder) {
@@ -61,8 +60,8 @@ public class TeacherController {
 
     @GetMapping(value = "/teachers/course/{id}")
     @ResponseStatus(HttpStatus.FOUND)
-    public List<Teacher> getAllTeachersAssignedToCourse(@PathVariable(name = "id") Integer id) {
-        Course course = courseService.getCourse(id);
+    public List<TeacherDTO> getAllTeachersAssignedToCourse(@PathVariable(name = "id") Integer id) {
+        CourseDTO course = courseService.getCourse(id);
         return teacherService.getAllTeachersAssignedToCourse(course);
     }
 

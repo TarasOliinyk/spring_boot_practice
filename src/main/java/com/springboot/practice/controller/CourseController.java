@@ -1,9 +1,8 @@
 package com.springboot.practice.controller;
 
 import com.springboot.practice.dto.CourseDTO;
+import com.springboot.practice.dto.TeacherDTO;
 import com.springboot.practice.exceptions.course.IllegalCourseSearchException;
-import com.springboot.practice.model.Course;
-import com.springboot.practice.model.Teacher;
 import com.springboot.practice.service.CourseService;
 import com.springboot.practice.service.TeacherService;
 import com.springboot.practice.service.criteria.CourseCriteria;
@@ -24,61 +23,59 @@ public class CourseController {
     }
 
     @PostMapping("/course")
-    public ResponseEntity<Course> createCourse(@RequestBody CourseDTO courseDTO) {
+    public ResponseEntity<CourseDTO> createCourse(@RequestBody CourseDTO courseDTO) {
         return ResponseEntity.status(HttpStatus.CREATED).body(courseService.createCourse(courseDTO.getName()));
     }
 
     @PostMapping("/course_with_dates")
-    public ResponseEntity<Course> createCourseWithStartAndEndDates(@RequestBody CourseDTO courseDTO) {
+    public ResponseEntity<CourseDTO> createCourseWithStartAndEndDates(@RequestBody CourseDTO courseDTO) {
         return ResponseEntity.status(HttpStatus.CREATED).body(courseService.createCourseWithStartAndEndDates(
                 courseDTO.getName(), courseDTO.getStartDate(), courseDTO.getEndDate()));
     }
 
     @GetMapping(value = "/course/{id}")
-    public ResponseEntity<Course> getCourse(@PathVariable(name = "id") Integer id) {
+    public ResponseEntity<CourseDTO> getCourse(@PathVariable(name = "id") Integer id) {
         return ResponseEntity.status(HttpStatus.FOUND).body(courseService.getCourse(id));
     }
 
     @GetMapping(value = "/course/list")
     @ResponseStatus(value = HttpStatus.FOUND)
-    public List<Course> getAllCourses() {
+    public List<CourseDTO> getAllCourses() {
         return courseService.getAllCourses();
     }
 
     @GetMapping("/courses/teacher/{teacherId}")
     @ResponseStatus(HttpStatus.FOUND)
-    public List<Course> getAllCoursesAssignedToTeacher(@PathVariable(name = "teacherId") Integer teacherId) {
-        Teacher teacher = teacherService.getTeacher(teacherId);
-        return courseService.getAllCoursesAssignedToTeacher(teacher);
+    public List<CourseDTO> getAllCoursesAssignedToTeacher(@PathVariable(name = "teacherId") Integer teacherId) {
+        TeacherDTO teacherDTO = teacherService.getTeacher(teacherId);
+        return courseService.getAllCoursesAssignedToTeacher(teacherDTO);
     }
 
     @PutMapping(value = "/course/{courseId}/add_teacher/{teacherId}")
-    public ResponseEntity<Course> assignTeacher(@PathVariable(value = "courseId") Integer courseId,
+    public ResponseEntity<CourseDTO> assignTeacher(@PathVariable(value = "courseId") Integer courseId,
                                                 @PathVariable(value = "teacherId") Integer teacherId) {
-        Course course = courseService.getCourse(courseId);
-        Teacher teacher = teacherService.getTeacher(teacherId);
-        return ResponseEntity.status(HttpStatus.OK).body(courseService.assignTeacherToCourse(course, teacher));
+        CourseDTO courseDTO = courseService.getCourse(courseId);
+        TeacherDTO teacherDTO = teacherService.getTeacher(teacherId);
+        return ResponseEntity.status(HttpStatus.OK).body(courseService.assignTeacherToCourse(courseDTO, teacherDTO));
     }
 
     @PutMapping("/course/{courseId}/remove_teacher/{teacherId}")
-    public ResponseEntity<Course> unassignTeacher(@PathVariable(value = "courseId") Integer courseId,
+    public ResponseEntity<CourseDTO> unassignTeacher(@PathVariable(value = "courseId") Integer courseId,
                                                   @PathVariable(value = "teacherId") Integer teacherId) {
-        Course course = courseService.getCourse(courseId);
-        Teacher teacher = course.getTeachers().stream().filter(t -> t.getId().equals(teacherId)).findFirst().orElseThrow(
-                () -> new RuntimeException(String.format("The course with id '%s' doesn't have assigned teacher with id '%s'",
-                        courseId, teacherId)));
-        return ResponseEntity.status(HttpStatus.OK).body(courseService.unassignTeacherFromCourse(course, teacher));
+        CourseDTO courseDTO = courseService.getCourse(courseId);
+        TeacherDTO teacherDTO = teacherService.getTeacher(teacherId);
+        return ResponseEntity.status(HttpStatus.OK).body(courseService.unassignTeacherFromCourse(courseDTO, teacherDTO));
     }
 
     @GetMapping("/course/teachers/{numberOfTeachers}")
     @ResponseStatus(HttpStatus.FOUND)
-    public List<Course> getCoursesWithNumberOfAssignedTeachers(@PathVariable(value = "numberOfTeachers") int numberOfTeachers) {
+    public List<CourseDTO> getCoursesWithNumberOfAssignedTeachers(@PathVariable(value = "numberOfTeachers") int numberOfTeachers) {
         return courseService.getCoursesWithNumberOfAssignedTeachers(numberOfTeachers);
     }
 
     @GetMapping("/courses/filter/{sortingCriteria}")
     @ResponseStatus(HttpStatus.OK)
-    public List<Course> getFilteredCourses(@PathVariable(value = "sortingCriteria") String sortingCriteria) {
+    public List<CourseDTO> getFilteredCourses(@PathVariable(value = "sortingCriteria") String sortingCriteria) {
         CourseCriteria courseCriteria;
 
         switch (sortingCriteria) {
@@ -104,7 +101,7 @@ public class CourseController {
 
     @GetMapping("/courses/duration/{numberOfDays}")
     @ResponseStatus(HttpStatus.FOUND)
-    public List<Course> getCoursesThatLastSpecificNumberOfDays(@PathVariable(value = "numberOfDays") int numberOfDays) {
+    public List<CourseDTO> getCoursesThatLastSpecificNumberOfDays(@PathVariable(value = "numberOfDays") int numberOfDays) {
         return courseService.getCoursesThatLast(numberOfDays);
     }
 

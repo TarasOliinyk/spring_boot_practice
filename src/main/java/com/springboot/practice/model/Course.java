@@ -2,14 +2,19 @@ package com.springboot.practice.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.springboot.practice.utils.LocalDatePersistenceConverter;
+import lombok.*;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.*;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 @Entity
+@Data
+@ToString(exclude = "teachers")
+@EqualsAndHashCode(exclude = {"teachers", "startDate", "endDate"})
+@NoArgsConstructor
 public class Course {
 
     @Id
@@ -25,6 +30,7 @@ public class Course {
 
     @Column
     @Convert(converter = LocalDatePersistenceConverter.class)
+//    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) // This is not obligatory since the LocalDate takes care of validating the obtained date in a String format
     private LocalDate startDate;
 
     @Column
@@ -39,72 +45,5 @@ public class Course {
         this.name = name;
         this.startDate = startDate;
         this.endDate = endDate;
-    }
-
-    public Course() {
-    }
-
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public List<Teacher> getTeachers() {
-        return teachers;
-    }
-
-    public void setTeachers(List<Teacher> teachers) {
-        this.teachers = teachers;
-    }
-
-    public LocalDate getStartDate() {
-        return startDate;
-    }
-
-    public void setStartDate(LocalDate startDate) {
-        this.startDate = startDate;
-    }
-
-    public LocalDate getEndDate() {
-        return endDate;
-    }
-
-    public void setEndDate(LocalDate endDate) {
-        this.endDate = endDate;
-    }
-
-    @Override
-    public String toString() {
-        return "Course {" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                ", startDate='" + startDate + '\'' +
-                ", endDate='" + endDate + '\'' +
-                '}';
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Course course = (Course) o;
-        return Objects.equals(id, course.id) &&
-                Objects.equals(name, course.name);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(id, name);
     }
 }

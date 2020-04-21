@@ -1,7 +1,7 @@
 package com.springboot.practice.ui;
 
-import com.springboot.practice.model.Course;
-import com.springboot.practice.model.Teacher;
+import com.springboot.practice.dto.CourseDTO;
+import com.springboot.practice.dto.TeacherDTO;
 import com.springboot.practice.service.CourseService;
 import com.springboot.practice.service.TeacherService;
 import com.springboot.practice.service.criteria.CourseCriteria;
@@ -34,11 +34,11 @@ public class ConsoleReader implements CommandLineRunner {
 //        Course physics = courseService.createCourse("Physics");
 //        Teacher teacher = teacherService.createTeacher("Bob", "White", 37);
 
-        Course math = courseService.getCourse(1);
-        Course physics = courseService.getCourse(2);
-        Teacher teacherMike = teacherService.getTeacher(1);
-        Teacher teacherTom = teacherService.getTeacher(2);
-        Teacher teacherBob = teacherService.getTeacher(3);
+        CourseDTO math = courseService.getCourse(1);
+        CourseDTO physics = courseService.getCourse(2);
+        TeacherDTO teacherMike = teacherService.getTeacher(1);
+        TeacherDTO teacherTom = teacherService.getTeacher(2);
+        TeacherDTO teacherBob = teacherService.getTeacher(3);
 
 //        courseService.assignTeacherToCourse(physics, teacherBob);
 //        courseService.assignTeacherToCourse(math, teacherMike);
@@ -58,28 +58,28 @@ public class ConsoleReader implements CommandLineRunner {
         System.out.println("TEACHERS:");
         teacherService.getAllTeachers().forEach(t -> System.out.println(t.toString()));
         System.out.println("COURSES ASSIGNED TO Mike:");
-        List<Course> coursesAssignedToMike = courseService.getAllCoursesAssignedToTeacher(teacherMike);
+        List<CourseDTO> coursesAssignedToMike = courseService.getAllCoursesAssignedToTeacher(teacherMike);
         coursesAssignedToMike.forEach(mc -> System.out.println(mc.toString()));
         System.out.println("COURSES ASSIGNED TO Tom:");
-        List<Course> coursesAssignedToTom = courseService.getAllCoursesAssignedToTeacher(teacherTom);
+        List<CourseDTO> coursesAssignedToTom = courseService.getAllCoursesAssignedToTeacher(teacherTom);
         coursesAssignedToTom.forEach(mc -> System.out.println(mc.toString()));
         System.out.println("COURSES THAT HAVE SPECIFIC NUMBER OF ASSIGNED TEACHERS:");
-        List<Course> courses = courseService.getCoursesWithNumberOfAssignedTeachers(3);
+        List<CourseDTO> courses = courseService.getCoursesWithNumberOfAssignedTeachers(3);
         courses.forEach(course -> System.out.println(course.toString()));
         System.out.println("TEACHERS SORTED BY AGE:");
-        List<Teacher> sortedTeachers = teacherService.getAllTeachersSortedBy(TeacherSortingCriteria.DESCENDING_BY_AGE);
+        List<TeacherDTO> sortedTeachers = teacherService.getAllTeachersSortedBy(TeacherSortingCriteria.DESCENDING_BY_AGE);
         sortedTeachers.forEach(teacher -> System.out.println(teacher.toString()));
         System.out.println("COURSES THAT HAVEN'T BEEN STARTED:");
-        List<Course> notStatedCourses = courseService.getFilteredCourses(CourseCriteria.NOT_STARTED);
+        List<CourseDTO> notStatedCourses = courseService.getFilteredCourses(CourseCriteria.NOT_STARTED);
         notStatedCourses.forEach(course -> System.out.println(course.toString()));
         System.out.println("FINISHED COURSES:");
-        List<Course> finishedCourses = courseService.getFilteredCourses(CourseCriteria.FINISHED);
+        List<CourseDTO> finishedCourses = courseService.getFilteredCourses(CourseCriteria.FINISHED);
         finishedCourses.forEach(course -> System.out.println(course.toString()));
         System.out.println("ONGOING COURSES:");
-        List<Course> ongoingCourses = courseService.getFilteredCourses(CourseCriteria.ONGOING);
+        List<CourseDTO> ongoingCourses = courseService.getFilteredCourses(CourseCriteria.ONGOING);
         ongoingCourses.forEach(course -> System.out.println(course.toString()));
         System.out.println("COURSES THAT LAST SPECIFIC NUMBER OF DAYS:");
-        List<Course> coursesThatLastNumberOfDays = courseService.getCoursesThatLast(5);
+        List<CourseDTO> coursesThatLastNumberOfDays = courseService.getCoursesThatLast(5);
         coursesThatLastNumberOfDays.forEach(course -> System.out.println(course.toString()));
         System.out.println("\n=====================================================================\n");
 

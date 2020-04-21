@@ -13,7 +13,6 @@ import java.util.List;
 
 @Repository
 public class CustomCourseRepositoryImpl implements CustomCourseRepository {
-
     private final EntityManager entityManager;
 
     public CustomCourseRepositoryImpl(EntityManager entityManager) {
