@@ -1,22 +1,22 @@
 package com.springboot.practice.service;
 
-import com.springboot.practice.model.Course;
-import com.springboot.practice.model.Teacher;
+import com.springboot.practice.dto.CourseDTO;
+import com.springboot.practice.dto.TeacherDTO;
 import com.springboot.practice.service.criteria.TeacherSortingCriteria;
 
 import java.util.List;
 
 public interface TeacherService {
 
-    Teacher createTeacher(String firstName, String lastName, Integer age);
+    TeacherDTO createTeacher(String firstName, String lastName, Integer age);
 
-    Teacher getTeacher(Integer teacherId);
+    TeacherDTO getTeacher(Integer teacherId);
 
-    List<Teacher> getAllTeachers();
+    List<TeacherDTO> getAllTeachers();
 
-    List<Teacher> getAllTeachersSortedBy(TeacherSortingCriteria sortingParameter);
+    List<TeacherDTO> getAllTeachersSortedBy(TeacherSortingCriteria sortingParameter);
 
-    List<Teacher> getAllTeachersAssignedToCourse(Course course);
+    List<TeacherDTO> getAllTeachersAssignedToCourse(CourseDTO courseDTO);
 
     void deleteTeacher(Integer teacherId);
 }

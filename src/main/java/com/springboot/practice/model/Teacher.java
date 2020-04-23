@@ -1,13 +1,18 @@
 package com.springboot.practice.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import lombok.*;
 
 import javax.persistence.*;
+import javax.validation.constraints.*;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 @Entity
+@Data
+@ToString(exclude = "courses")
+@EqualsAndHashCode(exclude = "courses")
+@NoArgsConstructor
 public class Teacher {
 
     @Id
@@ -15,12 +20,16 @@ public class Teacher {
     private Integer id;
 
     @Column
+    @NotEmpty(message = "Teacher cannot be registered without first name")
     private String firstName;
 
     @Column
+    @NotEmpty(message = "Teacher cannot be registered without last name")
     private String lastName;
 
     @Column
+    @Positive(message = "Teacher's age cannot be a negative number")
+    @Min(value = 16, message = "Teacher has to be at least 16 years old")
     public Integer age;
 
     @JsonIgnore
@@ -31,75 +40,5 @@ public class Teacher {
         this.firstName = firstName;
         this.lastName = lastName;
         this.age = age;
-    }
-
-    public Teacher() {
-    }
-
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
-    public String getFirstName() {
-        return firstName;
-    }
-
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
-    }
-
-    public String getLastName() {
-        return lastName;
-    }
-
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
-    }
-
-    public Integer getAge() {
-        return age;
-    }
-
-    public void setAge(Integer age) {
-        this.age = age;
-    }
-
-    public List<Course> getCourses() {
-        return courses;
-    }
-
-    public void setCourses(List<Course> courses) {
-        this.courses = courses;
-    }
-
-
-    @Override
-    public String toString() {
-        return "Teacher {" +
-                "id=" + id +
-                ", firstName='" + firstName + '\'' +
-                ", lastName='" + lastName + '\'' +
-                ", age=" + age +
-                '}';
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Teacher teacher = (Teacher) o;
-        return Objects.equals(id, teacher.id) &&
-                Objects.equals(firstName, teacher.firstName) &&
-                Objects.equals(lastName, teacher.lastName) &&
-                Objects.equals(age, teacher.age);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(id, firstName, lastName, age);
     }
 }

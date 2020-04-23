@@ -1,7 +1,7 @@
 package com.springboot.practice.service;
 
-import com.springboot.practice.model.Course;
-import com.springboot.practice.model.Teacher;
+import com.springboot.practice.dto.CourseDTO;
+import com.springboot.practice.dto.TeacherDTO;
 import com.springboot.practice.service.criteria.CourseCriteria;
 
 import java.time.LocalDate;
@@ -9,27 +9,27 @@ import java.util.List;
 
 public interface CourseService {
 
-    Course createCourse(String courseName);
+    CourseDTO createCourse(String courseName);
 
-    Course createCourseWithStartAndEndDates(String courseName, LocalDate startDate, LocalDate endDate);
+    CourseDTO createCourseWithStartAndEndDates(String courseName, LocalDate startDate, LocalDate endDate);
 
-    Course updateCourse(Course course);
+    CourseDTO updateCourse(CourseDTO courseDTO);
 
-    Course getCourse(Integer id);
+    CourseDTO getCourse(Integer id);
 
-    List<Course> getAllCourses();
+    List<CourseDTO> getAllCourses();
 
-    List<Course> getAllCoursesAssignedToTeacher(Teacher teacher);
+    List<CourseDTO> getAllCoursesAssignedToTeacher(TeacherDTO teacherDTO);
 
-    Course assignTeacherToCourse(Course course, Teacher teacher);
+    CourseDTO assignTeacherToCourse(CourseDTO courseDTO, TeacherDTO teacherDTO);
 
-    Course unassignTeacherFromCourse(Course course, Teacher teacher);
+    CourseDTO unassignTeacherFromCourse(CourseDTO courseDTO, TeacherDTO teacherDTO);
 
-    List<Course> getCoursesWithNumberOfAssignedTeachers(int numberOfTeachers);
+    List<CourseDTO> getCoursesWithNumberOfAssignedTeachers(int numberOfTeachers);
 
-    public List<Course> getFilteredCourses(CourseCriteria criteria);
+    List<CourseDTO> getFilteredCourses(CourseCriteria criteria);
 
-    public List<Course> getCoursesThatLast(int numberOfDays);
+    List<CourseDTO> getCoursesThatLast(int numberOfDays);
 
     void deleteCourse(Integer courseId);
 }
