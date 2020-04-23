@@ -16,9 +16,7 @@ public interface TeacherService {
 
     List<Teacher> getAllTeachersSortedBy(TeacherSortingCriteria sortingParameter);
 
-    Teacher getTeacherAssignedToCourse(Integer courseId);
-
-    List<Course> getAllCoursesAssignedToTeacher(Teacher teacher);
+    List<Teacher> getAllTeachersAssignedToCourse(Course course);
 
     void deleteTeacher(Integer teacherId);
 }

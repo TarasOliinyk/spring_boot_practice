@@ -8,11 +8,12 @@ import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface CourseRepository extends CrudRepository<Course, Integer>, CustomCourseRepository {
 
-    Course findOneById(Integer id);
+    Optional<Course> findOneById(Integer id);
 
     List<Course> findAll();
 
