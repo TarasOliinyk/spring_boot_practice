@@ -126,7 +126,7 @@ public class CourseServiceImplTest {
         expectedCourseDTO.setStartDate(today);
         expectedCourseDTO.setEndDate(today.plusDays(5));
 
-        Mockito.when(courseRepository.findOneById(34)).thenReturn(Optional.of(course));
+        Mockito.when(courseRepository.findOneById(eq(34))).thenReturn(Optional.of(course));
 
         CourseDTO actualCourseDTO = courseService.getCourse(34);
 
