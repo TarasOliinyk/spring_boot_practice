@@ -2,6 +2,7 @@ package com.springboot.practice.service;
 
 import com.springboot.practice.dto.CourseDTO;
 import com.springboot.practice.dto.TeacherDTO;
+import com.springboot.practice.exceptions.course.IllegalCourseArgumentException;
 import com.springboot.practice.model.Course;
 import com.springboot.practice.model.Teacher;
 import com.springboot.practice.repository.CourseRepository;
@@ -16,12 +17,16 @@ import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.modelmapper.ModelMapper;
 
+import javax.validation.ConstraintViolation;
+import javax.validation.Validation;
+import javax.validation.Validator;
+import javax.validation.ValidatorFactory;
 import java.time.LocalDate;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
+import static org.assertj.core.api.AssertionsForClassTypes.catchThrowable;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.times;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -37,12 +42,14 @@ public class CourseServiceImplTest {
         courseService = new CourseServiceImpl(courseRepository, modelMapper);
     }
 
+    // Positive scenarios:
+
     @Test
     public void createCourse_CreateNewCourse_ReturnCourseDTO() {
         CourseDTO expectedCourseDTO = new CourseDTO();
         expectedCourseDTO.setName("MyCourse");
 
-        Mockito.when(courseRepository.save(new Course("MyCourse"))).thenReturn(new Course("MyCourse"));
+        Mockito.when(courseRepository.save(eq(new Course("MyCourse")))).thenReturn(new Course("MyCourse"));
 
         CourseDTO actualCourseDTO = courseService.createCourse("MyCourse");
 
@@ -60,7 +67,7 @@ public class CourseServiceImplTest {
         expectedCourseDTO.setStartDate(today);
         expectedCourseDTO.setEndDate(threeDaysAfterToday);
 
-        Mockito.when(courseRepository.save(new Course("MyCourseWithDates", today, threeDaysAfterToday)))
+        Mockito.when(courseRepository.save(eq(new Course("MyCourseWithDates", today, threeDaysAfterToday))))
                 .thenReturn(new Course("MyCourseWithDates", today, threeDaysAfterToday));
 
         CourseDTO actualCourseDTO = courseService.createCourseWithStartAndEndDates("MyCourseWithDates", today,
@@ -93,7 +100,7 @@ public class CourseServiceImplTest {
         Course course = new Course("MyCourseUpdated", fiveDaysAfterToday, tenDaysAfterToday);
         course.setId(23);
 
-        Mockito.when(courseRepository.save(course)).thenReturn(course);
+        Mockito.when(courseRepository.save(eq(course))).thenReturn(course);
 
         CourseDTO courseDTO = new CourseDTO();
         courseDTO.setId(23);
@@ -153,7 +160,7 @@ public class CourseServiceImplTest {
         teacher.setId(4);
         List<Course> expectedCourses = Arrays.asList(new Course("Course1"), new Course("Course2"));
 
-        Mockito.when(courseRepository.findAllByTeachersContaining(teacher)).thenReturn(expectedCourses);
+        Mockito.when(courseRepository.findAllByTeachersContaining(eq(teacher))).thenReturn(expectedCourses);
 
         List<CourseDTO> actualCourses = courseService.getAllCoursesAssignedToTeacher(teacherDTO);
         List<String> actualCourseNames = actualCourses.stream().map(CourseDTO::getName).collect(Collectors.toList());
@@ -183,7 +190,7 @@ public class CourseServiceImplTest {
         CourseDTO courseDTO = new CourseDTO();
         courseDTO.setId(5);
 
-        Mockito.when(courseRepository.save(course)).thenReturn(course);
+        Mockito.when(courseRepository.save(eq(course))).thenReturn(course);
 
         CourseDTO actualCourseDTO = courseService.assignTeacherToCourse(courseDTO, teacherDTO);
 
@@ -217,7 +224,7 @@ public class CourseServiceImplTest {
         courseDTO.setId(3);
         courseDTO.getTeachers().addAll(courseTeachers);
 
-        Mockito.when(courseRepository.save(course)).thenReturn(course);
+        Mockito.when(courseRepository.save(eq(course))).thenReturn(course);
 
         CourseDTO actualCourseDTO = courseService.unassignTeacherFromCourse(courseDTO, firstTeacherDTO);
 
@@ -243,7 +250,7 @@ public class CourseServiceImplTest {
         courseB.getTeachers().addAll(Arrays.asList(new Teacher(), new Teacher(), new Teacher()));
         courseC.getTeachers().addAll(Arrays.asList(new Teacher(), new Teacher(), new Teacher(), new Teacher()));
 
-        Mockito.when(courseRepository.findAllByTeachersCount(4)).thenReturn(Arrays.asList(courseA, courseC));
+        Mockito.when(courseRepository.findAllByTeachersCount(eq(4))).thenReturn(Arrays.asList(courseA, courseC));
 
         List<CourseDTO> actualListOfCourses = courseService.getCoursesWithNumberOfAssignedTeachers(4);
         List<Integer> idsOfFilteredCourses = actualListOfCourses.stream().map(CourseDTO::getId).collect(Collectors.toList());
@@ -271,7 +278,7 @@ public class CourseServiceImplTest {
         courseC.setStartDate(today.minusDays(4));
         courseC.setEndDate(today.minusDays(1));
 
-        Mockito.when(courseRepository.findAllByEndDateLessThan(LocalDate.now())).thenReturn(Arrays.asList(courseB, courseC));
+        Mockito.when(courseRepository.findAllByEndDateLessThan(eq(LocalDate.now()))).thenReturn(Arrays.asList(courseB, courseC));
 
         List<CourseDTO> actualCourses = courseService.getFilteredCourses(CourseCriteria.FINISHED);
         List<Integer> idsOfFilteredCourses = actualCourses.stream().map(CourseDTO::getId).collect(Collectors.toList());
@@ -291,7 +298,7 @@ public class CourseServiceImplTest {
         courseB.setId(10);
         List<Course> expectedCourses = Arrays.asList(courseA, courseB);
 
-        Mockito.when(courseRepository.findAllByDateDiffBetweenStartDateAndEndDateEqualTo(3)).thenReturn(expectedCourses);
+        Mockito.when(courseRepository.findAllByDateDiffBetweenStartDateAndEndDateEqualTo(eq(3))).thenReturn(expectedCourses);
 
         List<CourseDTO> actualCourses = courseService.getCoursesThatLast(3);
         List<Integer> idsOfFilteredCourses = actualCourses.stream().map(CourseDTO::getId).collect(Collectors.toList());
@@ -308,5 +315,35 @@ public class CourseServiceImplTest {
         courseService.deleteCourse(4);
 
         Mockito.verify(courseRepository, times(1)).deleteById(Mockito.eq(4));
+    }
+
+    // Negative scenarios:
+
+    @Test
+    public void createCourse_CreateCourseWithNullName_ThrowException() {
+        Mockito.when(courseRepository.save(eq(new Course(null)))).thenThrow(new IllegalCourseArgumentException());
+
+        Throwable thrownException = catchThrowable(() -> courseService.createCourse(null));
+
+        Assertions.assertThat(thrownException)
+                .as("Expected exception has not been thrown on an attempt to create a course with null name")
+                .isInstanceOf(IllegalCourseArgumentException.class);
+        Assertions.assertThat(thrownException.getMessage())
+                .as("Actual exception message differs from the expected one")
+                .isEqualTo("IIllegal argument for Course object has been passed");
+    }
+
+    @Test
+    public void createCourse_CreateCourseWithEmptyName_TriggerValidation() {
+        ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
+        Validator validator = factory.getValidator();
+        Set<ConstraintViolation<Course>> violations = validator.validate(new Course(""));
+
+        Assertions.assertThat(violations.size())
+                .as("Validation of an empty course name has not been initiated")
+                .isEqualTo(1);
+        Assertions.assertThat(violations.iterator().next().getMessage())
+                .as("Actual validation message for empty course name differs from the expected one")
+                .isEqualTo("Course cannot be registered without a name");
     }
 }
