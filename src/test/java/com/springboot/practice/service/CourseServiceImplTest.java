@@ -314,7 +314,7 @@ public class CourseServiceImplTest {
     public void deleteCourse_RemoveSpecifiedCourse() {
         courseService.deleteCourse(4);
 
-        Mockito.verify(courseRepository, times(1)).deleteById(Mockito.eq(4));
+        Mockito.verify(courseRepository, Mockito.times(1)).deleteById(Mockito.eq(4));
     }
 
     // Negative scenarios:
