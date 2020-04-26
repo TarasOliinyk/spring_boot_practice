@@ -6,6 +6,7 @@ import lombok.*;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotEmpty;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -22,6 +23,7 @@ public class Course {
     private Integer id;
 
     @Column
+    @NotEmpty(message = "Course cannot be registered without a name")
     private String name;
 
     @JsonIgnore
