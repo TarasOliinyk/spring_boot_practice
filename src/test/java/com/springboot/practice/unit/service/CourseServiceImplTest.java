@@ -1,13 +1,16 @@
-package com.springboot.practice.service;
+package com.springboot.practice.unit.service;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.springboot.practice.dto.CourseDTO;
 import com.springboot.practice.dto.TeacherDTO;
 import com.springboot.practice.exceptions.course.IllegalCourseArgumentException;
 import com.springboot.practice.model.Course;
 import com.springboot.practice.model.Teacher;
 import com.springboot.practice.repository.CourseRepository;
-import com.springboot.practice.service.criteria.CourseCriteria;
-import com.springboot.practice.service.implementation.CourseServiceImpl;
+import com.springboot.practice.unit.service.criteria.CourseCriteria;
+import com.springboot.practice.unit.service.implementation.CourseServiceImpl;
+import com.springboot.practice.utils.json.JsonParser;
+import com.springboot.practice.utils.json.supplier.course.CourseJsonData;
 import org.assertj.core.api.Assertions;
 import org.assertj.core.api.SoftAssertions;
 import org.junit.*;
@@ -22,14 +25,17 @@ import javax.validation.Validation;
 import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
 import java.time.LocalDate;
-import java.util.*;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
+import static java.time.temporal.ChronoUnit.DAYS;
 import static org.assertj.core.api.AssertionsForClassTypes.catchThrowable;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.times;
 
-@RunWith(MockitoJUnitRunner.class)
+@RunWith(MockitoJUnitRunner.Silent.class)
 public class CourseServiceImplTest {
     private CourseService courseService;
     @Mock
@@ -45,13 +51,14 @@ public class CourseServiceImplTest {
     // Positive scenarios:
 
     @Test
-    public void createCourse_CreateNewCourse_ReturnCourseDTO() {
-        CourseDTO expectedCourseDTO = new CourseDTO();
-        expectedCourseDTO.setName("MyCourse");
+    public void createCourse_CreateNewCourse_ReturnCreatedCourse() {
+        Course course = JsonParser.buildObjectFromJSON(CourseJsonData.COURSE_FOR_CREATE_ONE_POSITIVE, new TypeReference<>() {});
+        CourseDTO expectedCourseDTO = JsonParser.buildObjectFromJSON(CourseJsonData.COURSE_FOR_CREATE_ONE_POSITIVE,
+                new TypeReference<>() {});
 
-        Mockito.when(courseRepository.save(eq(new Course("MyCourse")))).thenReturn(new Course("MyCourse"));
+        Mockito.when(courseRepository.save(eq(course))).thenReturn(course);
 
-        CourseDTO actualCourseDTO = courseService.createCourse("MyCourse");
+        CourseDTO actualCourseDTO = courseService.createCourse(course.getName());
 
         Assertions.assertThat(actualCourseDTO.getName())
                 .as("Actual name of a course created by the Course Service differs from the expected one")
@@ -60,18 +67,15 @@ public class CourseServiceImplTest {
 
     @Test
     public void createCourseWithStartAndEndDates_CreateNewCourseWithStartAndEndDates_ReturnCreatedCourse() {
-        LocalDate threeDaysAfterToday = today.plusDays(3);
+        Course course = JsonParser.buildObjectFromJSON(CourseJsonData.COURSE_FOR_CREATE_ONE_WITH_DATES_POSITIVE,
+                new TypeReference<>() {});
+        CourseDTO expectedCourseDTO = JsonParser.buildObjectFromJSON(CourseJsonData.COURSE_FOR_CREATE_ONE_WITH_DATES_POSITIVE,
+                new TypeReference<>() {});
 
-        CourseDTO expectedCourseDTO = new CourseDTO();
-        expectedCourseDTO.setName("MyCourseWithDates");
-        expectedCourseDTO.setStartDate(today);
-        expectedCourseDTO.setEndDate(threeDaysAfterToday);
+        Mockito.when(courseRepository.save(eq(course))).thenReturn(course);
 
-        Mockito.when(courseRepository.save(eq(new Course("MyCourseWithDates", today, threeDaysAfterToday))))
-                .thenReturn(new Course("MyCourseWithDates", today, threeDaysAfterToday));
-
-        CourseDTO actualCourseDTO = courseService.createCourseWithStartAndEndDates("MyCourseWithDates", today,
-                threeDaysAfterToday);
+        CourseDTO actualCourseDTO = courseService.createCourseWithStartAndEndDates(course.getName(), course.getStartDate(),
+                course.getEndDate());
 
         SoftAssertions softAssertions = new SoftAssertions();
         softAssertions.assertThat(actualCourseDTO.getName())
@@ -87,48 +91,34 @@ public class CourseServiceImplTest {
     }
 
     @Test
-    public void updateCourse_UpdateSpecificCourse_ReturnUpdateCourse() {
-        LocalDate fiveDaysAfterToday = today.plusDays(5);
-        LocalDate tenDaysAfterToday = today.plusDays(10);
+    public void updateCourse_UpdateSpecificCourse_ReturnUpdatedCourse() {
+        Course course = JsonParser.buildObjectFromJSON(CourseJsonData.COURSE_FOR_UPDATE_COURSE, new TypeReference<>() {});
+        String newCourseName = course.getName() + "Updated";
+        Course courseWithUpdatedName = JsonParser.buildObjectFromJSON(CourseJsonData.COURSE_FOR_UPDATE_COURSE,
+                new TypeReference<>() {});
+        courseWithUpdatedName.setName(newCourseName);
 
-        CourseDTO expectedCourseDTO = new CourseDTO();
-        expectedCourseDTO.setId(23);
-        expectedCourseDTO.setName("MyCourseUpdated");
-        expectedCourseDTO.setStartDate(fiveDaysAfterToday);
-        expectedCourseDTO.setEndDate(tenDaysAfterToday);
+        Mockito.when(courseRepository.save(eq(course))).thenReturn(courseWithUpdatedName);
 
-        Course course = new Course("MyCourseUpdated", fiveDaysAfterToday, tenDaysAfterToday);
-        course.setId(23);
-
-        Mockito.when(courseRepository.save(eq(course))).thenReturn(course);
-
-        CourseDTO courseDTO = new CourseDTO();
-        courseDTO.setId(23);
-        courseDTO.setName("MyCourseUpdated");
-        courseDTO.setStartDate(fiveDaysAfterToday);
-        courseDTO.setEndDate(tenDaysAfterToday);
+        CourseDTO courseDTO = JsonParser.buildObjectFromJSON(CourseJsonData.COURSE_FOR_UPDATE_COURSE, new TypeReference<>() {});
 
         CourseDTO actualCourseDTO = courseService.updateCourse(courseDTO);
 
         Assertions.assertThat(actualCourseDTO)
                 .as("Course updated by the Course Service has not been updated as expected")
-                .isEqualToComparingFieldByField(expectedCourseDTO);
+                .isEqualToComparingFieldByField(courseWithUpdatedName);
     }
 
     @Test
     public void getCourse_RetrieveCourse_ReturnCourse() {
-        Course course = new Course("TestName", today, today.plusDays(5));
-        course.setId(34);
+        Course course = JsonParser.buildObjectFromJSON(CourseJsonData.COURSE_FOR_FIND_ONE_POSITIVE,
+                new TypeReference<>() {});
+        CourseDTO expectedCourseDTO = JsonParser.buildObjectFromJSON(CourseJsonData.COURSE_FOR_FIND_ONE_POSITIVE,
+                new TypeReference<>() {});
 
-        CourseDTO expectedCourseDTO = new CourseDTO();
-        expectedCourseDTO.setId(34);
-        expectedCourseDTO.setName("TestName");
-        expectedCourseDTO.setStartDate(today);
-        expectedCourseDTO.setEndDate(today.plusDays(5));
+        Mockito.when(courseRepository.findOneById(eq(course.getId()))).thenReturn(Optional.of(course));
 
-        Mockito.when(courseRepository.findOneById(eq(34))).thenReturn(Optional.of(course));
-
-        CourseDTO actualCourseDTO = courseService.getCourse(34);
+        CourseDTO actualCourseDTO = courseService.getCourse(course.getId());
 
         Assertions.assertThat(actualCourseDTO)
                 .as("Actual course retrieved by Course Service differs from the expected one")
@@ -137,65 +127,60 @@ public class CourseServiceImplTest {
 
     @Test
     public void getAllCourses_RetrieveAllCourses_ReturnCourses() {
-        CourseDTO courseDTOA = new CourseDTO();
-        CourseDTO courseDTOB = new CourseDTO();
-        courseDTOA.setName("CourseA");
-        courseDTOB.setName("CourseB");
-        List<CourseDTO> expectedDTOs = Arrays.asList(courseDTOA, courseDTOB);
+        List<Course> courses = JsonParser.buildObjectFromJSON(CourseJsonData.COURSES_FOR_FIND_ALL_POSITIVE,
+                new TypeReference<>() {});
+        List<CourseDTO> expectedDTOs = JsonParser.buildObjectFromJSON(CourseJsonData.COURSES_FOR_FIND_ALL_POSITIVE,
+                new TypeReference<>() {});
 
-        Mockito.when(courseRepository.findAll()).thenReturn(Arrays.asList(new Course("CourseA"), new Course("CourseB")));
+        Mockito.when(courseRepository.findAll()).thenReturn(courses);
 
         List<CourseDTO> actualDTOs = courseService.getAllCourses();
 
         Assertions.assertThat(actualDTOs)
-                .as("Courses retrieved by Course Service using 'getAllCourses' method differ from the expected courses")
+                .as("Courses retrieved by Course Service using 'getAllCourses' method differ from the " +
+                        "expected courses")
                 .isEqualTo(expectedDTOs);
     }
 
     @Test
     public void getAllCoursesAssignedToTeacher_RetrieveCoursesOfTeacher_ReturnListOfCourses() {
-        TeacherDTO teacherDTO = new TeacherDTO();
-        teacherDTO.setId(4);
-        Teacher teacher = new Teacher();
-        teacher.setId(4);
-        List<Course> expectedCourses = Arrays.asList(new Course("Course1"), new Course("Course2"));
+        Teacher teacher = JsonParser.buildObjectFromJSON(CourseJsonData.TEACHER_FOR_FIND_ALL_BY_TEACHERS_CONTAINING,
+                new TypeReference<>() {});
+        TeacherDTO teacherDTO = JsonParser.buildObjectFromJSON(CourseJsonData.TEACHER_FOR_FIND_ALL_BY_TEACHERS_CONTAINING,
+                new TypeReference<>() {});
+        List<Course> expectedCourses = JsonParser.buildObjectFromJSON(CourseJsonData.COURSES_FOR_FIND_ALL_BY_TEACHERS_CONTAINING,
+                new TypeReference<>() {});
 
         Mockito.when(courseRepository.findAllByTeachersContaining(eq(teacher))).thenReturn(expectedCourses);
 
         List<CourseDTO> actualCourses = courseService.getAllCoursesAssignedToTeacher(teacherDTO);
-        List<String> actualCourseNames = actualCourses.stream().map(CourseDTO::getName).collect(Collectors.toList());
-        List<String> expectedCourseNames = expectedCourses.stream().map(Course::getName).collect(Collectors.toList());
 
-        Assertions.assertThat(actualCourseNames)
+        Assertions.assertThat(actualCourses)
+                .usingFieldByFieldElementComparator()
                 .as("Actual courses retrieved by Course Service using 'getAllCoursesAssignedToTeacher' " +
                         "method differ from the expected ones")
-                .isEqualTo(expectedCourseNames);
+                .isEqualTo(expectedCourses);
     }
 
     @Test
     public void assignTeacherToCourse_SetTeachersToCourse_ReturnCourse() {
-        Teacher teacher = new Teacher("Mike", "Tyson", 34);
-        teacher.setId(6);
-
-        Course course = new Course();
-        course.setId(5);
+        Teacher teacher = JsonParser.buildObjectFromJSON(CourseJsonData.TEACHER_FOR_ASSIGN_TEACHER_TO_COURSE,
+                new TypeReference<>() {});
+        Course course = JsonParser.buildObjectFromJSON(CourseJsonData.COURSE_FOR_ASSIGN_TEACHER_TO_COURSE,
+                new TypeReference<>() {});
         course.getTeachers().add(teacher);
 
-        TeacherDTO teacherDTO = new TeacherDTO();
-        teacherDTO.setId(6);
-        teacherDTO.setFirstName("Mike");
-        teacherDTO.setLastName("Tyson");
-        teacherDTO.setAge(34);
-
-        CourseDTO courseDTO = new CourseDTO();
-        courseDTO.setId(5);
+        TeacherDTO teacherDTO = JsonParser.buildObjectFromJSON(CourseJsonData.TEACHER_FOR_ASSIGN_TEACHER_TO_COURSE,
+                new TypeReference<>() {});
+        CourseDTO courseDTO = JsonParser.buildObjectFromJSON(CourseJsonData.COURSE_FOR_ASSIGN_TEACHER_TO_COURSE,
+                new TypeReference<>() {});
 
         Mockito.when(courseRepository.save(eq(course))).thenReturn(course);
 
         CourseDTO actualCourseDTO = courseService.assignTeacherToCourse(courseDTO, teacherDTO);
 
         Assertions.assertThat(actualCourseDTO.getTeachers().size())
-                .as("Course has not been update by Course Service using 'assignTeacherToCourse' method")
+                .as("Course has not been updated by Course Service using 'assignTeacherToCourse' method")
                 .isEqualTo(1);
         Assertions.assertThat(actualCourseDTO.getTeachers().get(0))
                 .as("Expected teacher has not been assigned to course by Course Service using " +
@@ -205,24 +190,20 @@ public class CourseServiceImplTest {
 
     @Test
     public void unassignTeacherFromCourse_RemoveTeacherFromCourse_ReturnCourse() {
-        Teacher teacherA = new Teacher("John", "Travolta", 54);
-        teacherA.setId(4);
-        Teacher teacherB = new Teacher("Nick", "Cage", 43);
-        teacherB.setId(5);
-        List<Teacher> courseTeachers = Arrays.asList(teacherA, teacherB);
+        List<Teacher> courseTeachers = JsonParser.buildObjectFromJSON(CourseJsonData.TEACHERS_FOR_UNASSIGN_TEACHER_FROM_COURSE,
+                new TypeReference<>() {});
+        List<TeacherDTO> courseTeacherDTOs = JsonParser.buildObjectFromJSON(CourseJsonData.TEACHERS_FOR_UNASSIGN_TEACHER_FROM_COURSE,
+                new TypeReference<>() {});
 
-        Course course = new Course();
-        course.setId(3);
-        course.getTeachers().add(teacherB);
+        Course course = JsonParser.buildObjectFromJSON(CourseJsonData.COURSE_FOR_UNASSIGN_TEACHER_FROM_COURSE,
+                new TypeReference<>() {});
+        course.getTeachers().add(courseTeachers.get(1));
 
-        TeacherDTO firstTeacherDTO = new TeacherDTO();
-        firstTeacherDTO.setFirstName("John");
-        firstTeacherDTO.setLastName("Travolta");
-        firstTeacherDTO.setAge(54);
-
-        CourseDTO courseDTO = new CourseDTO();
-        courseDTO.setId(3);
+        CourseDTO courseDTO = JsonParser.buildObjectFromJSON(CourseJsonData.COURSE_FOR_UNASSIGN_TEACHER_FROM_COURSE,
+                new TypeReference<>() {});
         courseDTO.getTeachers().addAll(courseTeachers);
+
+        TeacherDTO firstTeacherDTO = courseTeacherDTOs.get(0);
 
         Mockito.when(courseRepository.save(eq(course))).thenReturn(course);
 
@@ -234,80 +215,68 @@ public class CourseServiceImplTest {
         Assertions.assertThat(actualCourseDTO.getTeachers().get(0))
                 .as("Wrong teacher has been unassigned from course by Course Service using " +
                         "'unassignTeacherFromCourse' method")
-                .isEqualTo(teacherB);
+                .isEqualTo(courseTeachers.get(1));
     }
 
     @Test
     public void getCoursesWithNumberOfAssignedTeachers_RetrieveCoursesWithSpecificNumberOfTeachers_ReturnCourses() {
-        Course courseA = new Course();
-        courseA.setId(1);
-        Course courseB = new Course();
-        courseB.setId(2);
-        Course courseC = new Course();
-        courseC.setId(3);
+        List<Course> courses = JsonParser.buildObjectFromJSON(CourseJsonData.COURSES_FOR_FIND_ALL_BY_TEACHERS_COUNT,
+                new TypeReference<>() {});
 
-        courseA.getTeachers().addAll(Arrays.asList(new Teacher(), new Teacher(), new Teacher(), new Teacher()));
-        courseB.getTeachers().addAll(Arrays.asList(new Teacher(), new Teacher(), new Teacher()));
-        courseC.getTeachers().addAll(Arrays.asList(new Teacher(), new Teacher(), new Teacher(), new Teacher()));
+        courses.get(0).getTeachers().addAll(Arrays.asList(new Teacher(), new Teacher(), new Teacher(), new Teacher()));
+        courses.get(1).getTeachers().addAll(Arrays.asList(new Teacher(), new Teacher(), new Teacher()));
+        courses.get(2).getTeachers().addAll(Arrays.asList(new Teacher(), new Teacher(), new Teacher(), new Teacher()));
 
-        Mockito.when(courseRepository.findAllByTeachersCount(eq(4))).thenReturn(Arrays.asList(courseA, courseC));
+        List<Course> expectedCourses = courses.stream().filter(course -> course.getTeachers().size() == 4)
+                .collect(Collectors.toList());
 
-        List<CourseDTO> actualListOfCourses = courseService.getCoursesWithNumberOfAssignedTeachers(4);
-        List<Integer> idsOfFilteredCourses = actualListOfCourses.stream().map(CourseDTO::getId).collect(Collectors.toList());
-        List<Integer> idsOfExpectedCourses = Arrays.asList(courseA.getId(), courseC.getId());
+        Mockito.when(courseRepository.findAllByTeachersCount(eq(4))).thenReturn(expectedCourses);
 
-        Assertions.assertThat(idsOfFilteredCourses)
+        List<CourseDTO> actualCourses = courseService.getCoursesWithNumberOfAssignedTeachers(4);
+
+        Assertions.assertThat(actualCourses)
+                .usingFieldByFieldElementComparator()
                 .as("Wrong courses have been returned by Course Service after using " +
                         "'getCoursesWithNumberOfAssignedTeachers' method")
-                .isEqualTo(idsOfExpectedCourses);
+                .isEqualTo(expectedCourses);
     }
 
     @Test
     public void getFilteredCourses_RetrieveFinishedCourses_ReturnCourses() {
-        Course courseA = new Course();
-        courseA.setId(7);
-        Course courseB = new Course();
-        courseB.setId(8);
-        Course courseC = new Course();
-        courseC.setId(9);
+        List<Course> courses = JsonParser.buildObjectFromJSON(CourseJsonData.COURSES_FOR_FIND_ALL_BY_END_DATE_LESS_THAN,
+                new TypeReference<>() {});
+        LocalDate comparisonDate = LocalDate.now();
+        List<Course> expectedCourses = courses.stream().filter(course -> course.getEndDate().isBefore(comparisonDate))
+                .collect(Collectors.toList());
 
-        courseA.setStartDate(today);
-        courseA.setEndDate(today.plusDays(5));
-        courseB.setStartDate(today.minusDays(10));
-        courseB.setEndDate(today.minusDays(2));
-        courseC.setStartDate(today.minusDays(4));
-        courseC.setEndDate(today.minusDays(1));
-
-        Mockito.when(courseRepository.findAllByEndDateLessThan(eq(LocalDate.now()))).thenReturn(Arrays.asList(courseB, courseC));
+        Mockito.when(courseRepository.findAllByEndDateLessThan(eq(comparisonDate))).thenReturn(expectedCourses);
 
         List<CourseDTO> actualCourses = courseService.getFilteredCourses(CourseCriteria.FINISHED);
-        List<Integer> idsOfFilteredCourses = actualCourses.stream().map(CourseDTO::getId).collect(Collectors.toList());
-        List<Integer> idsOfExpectedCourses = Arrays.asList(courseB.getId(), courseC.getId());
 
-        Assertions.assertThat(idsOfFilteredCourses)
+        Assertions.assertThat(actualCourses)
+                .usingFieldByFieldElementComparator()
                 .as("Wrong courses have been returned by Course Service after using " +
                         "'getFilteredCourses' method with CourseCriteria.FINISHED parameter")
-                .isEqualTo(idsOfExpectedCourses);
+                .isEqualTo(expectedCourses);
     }
 
     @Test
     public void getCoursesThatLast_RetrieveCoursesThatLastSpecificAmountOfTime_ReturnCourses() {
-        Course courseA = new Course();
-        courseA.setId(9);
-        Course courseB = new Course();
-        courseB.setId(10);
-        List<Course> expectedCourses = Arrays.asList(courseA, courseB);
+        List<Course> courses = JsonParser.buildObjectFromJSON(CourseJsonData.COURSES_FOR_FIND_ALL_THAT_LAST,
+                new TypeReference<>() {});
+        List<Course> expectedCourses = courses.stream().filter(course -> DAYS.between(course.getStartDate(),
+                course.getEndDate()) == 3).collect(Collectors.toList());
 
-        Mockito.when(courseRepository.findAllByDateDiffBetweenStartDateAndEndDateEqualTo(eq(3))).thenReturn(expectedCourses);
+        Mockito.when(courseRepository.findAllByDateDiffBetweenStartDateAndEndDateEqualTo(eq(3)))
+                .thenReturn(expectedCourses);
 
         List<CourseDTO> actualCourses = courseService.getCoursesThatLast(3);
-        List<Integer> idsOfFilteredCourses = actualCourses.stream().map(CourseDTO::getId).collect(Collectors.toList());
-        List<Integer> idsOfExpectedCourses = expectedCourses.stream().map(Course::getId).collect(Collectors.toList());
 
-        Assertions.assertThat(idsOfFilteredCourses)
+        Assertions.assertThat(actualCourses)
+                .usingFieldByFieldElementComparator()
                 .as("Actual courses returned by Course Service after using 'getCoursesThatLast' method " +
                         "differ from the expected ones")
-                .isEqualTo(idsOfExpectedCourses);
+                .isEqualTo(expectedCourses);
     }
 
     @Test

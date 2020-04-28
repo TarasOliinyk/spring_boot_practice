@@ -1,12 +1,15 @@
-package com.springboot.practice.service;
+package com.springboot.practice.unit.service;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.springboot.practice.dto.CourseDTO;
 import com.springboot.practice.dto.TeacherDTO;
 import com.springboot.practice.model.Course;
 import com.springboot.practice.model.Teacher;
 import com.springboot.practice.repository.TeacherRepository;
-import com.springboot.practice.service.criteria.TeacherSortingCriteria;
-import com.springboot.practice.service.implementation.TeacherServiceImpl;
+import com.springboot.practice.unit.service.criteria.TeacherSortingCriteria;
+import com.springboot.practice.unit.service.implementation.TeacherServiceImpl;
+import com.springboot.practice.utils.json.JsonParser;
+import com.springboot.practice.utils.json.supplier.teacher.TeacherJsonData;
 import org.assertj.core.api.Assertions;
 import org.assertj.core.api.SoftAssertions;
 import org.junit.*;
@@ -22,7 +25,6 @@ import javax.validation.Validation;
 import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
 import java.util.*;
-import java.util.stream.Collectors;
 
 import static org.mockito.ArgumentMatchers.eq;
 
@@ -42,20 +44,15 @@ public class TeacherServiceImplTest {
 
     @Test
     public void createTeacher_CreateNewTeacher_ReturnTeacher() {
-        String firstName = "Mike";
-        String lastName = "Brown";
-        int age = 54;
-
-        Teacher teacher = new Teacher(firstName, lastName, age);
-
-        TeacherDTO expectedTeacherDTO = new TeacherDTO();
-        expectedTeacherDTO.setFirstName(teacher.getFirstName());
-        expectedTeacherDTO.setLastName(teacher.getLastName());
-        expectedTeacherDTO.setAge(teacher.getAge());
+        Teacher teacher = JsonParser.buildObjectFromJSON(TeacherJsonData.TEACHER_FOR_CREATE_ONE_POSITIVE,
+                new TypeReference<>() {});
+        TeacherDTO expectedTeacherDTO = JsonParser.buildObjectFromJSON(TeacherJsonData.TEACHER_FOR_CREATE_ONE_POSITIVE,
+                new TypeReference<>() {});
 
         Mockito.when(teacherRepository.save(eq(teacher))).thenReturn(teacher);
 
-        TeacherDTO actualTeacherDTO = teacherService.createTeacher(firstName, lastName, age);
+        TeacherDTO actualTeacherDTO = teacherService.createTeacher(teacher.getFirstName(), teacher.getLastName(),
+                teacher.getAge());
 
         Assertions.assertThat(actualTeacherDTO)
                 .as("Actual teacher created by Teacher Service using 'createTeacher' method differs from " +
@@ -65,41 +62,31 @@ public class TeacherServiceImplTest {
 
     @Test
     public void getTeacher_RetrieveTeacher_ReturnTeacher() {
-        String fistName = "John";
-        String lastName = "Travolta";
-        int age = 45;
+        Teacher teacher = JsonParser.buildObjectFromJSON(TeacherJsonData.TEACHER_FOR_FIND_ONE_POSITIVE, new TypeReference<>() {});
 
-        Mockito.when(teacherRepository.findOneById(eq(4))).thenReturn(Optional.of(new Teacher(fistName, lastName, age)));
+        Mockito.when(teacherRepository.findOneById(eq(teacher.getId()))).thenReturn(Optional.of(teacher));
 
-        TeacherDTO actualTeacherDTO = teacherService.getTeacher(4);
+        TeacherDTO actualTeacherDTO = teacherService.getTeacher(teacher.getId());
 
         SoftAssertions softAssertions = new SoftAssertions();
         softAssertions.assertThat(actualTeacherDTO.getFirstName())
                 .as("Actual first name of the Teacher created by Teacher Service differs from the expected one")
-                .isEqualTo(fistName);
+                .isEqualTo(teacher.getFirstName());
         softAssertions.assertThat(actualTeacherDTO.getLastName())
                 .as("Actual last name of the Teacher created by Teacher Service differs from the expected one")
-                .isEqualTo(lastName);
+                .isEqualTo(teacher.getLastName());
         softAssertions.assertThat(actualTeacherDTO.getAge())
                 .as("Actual age of the Teacher created by Teacher Service differs from the expected one")
-                .isEqualTo(age);
+                .isEqualTo(teacher.getAge());
         softAssertions.assertAll();
     }
 
     @Test
     public void getAllTeachers_RetrieveAllTeachers_ReturnTeachers() {
-        List<Teacher> teachers = Arrays.asList(new Teacher("Chris", "White", 32),
-                new Teacher("Nicolas", "Green", 43));
-
-        List<TeacherDTO> expectedTeacherDTOs = new ArrayList<>();
-
-        teachers.forEach(teacher -> {
-            TeacherDTO teacherDTO = new TeacherDTO();
-            teacherDTO.setFirstName(teacher.getFirstName());
-            teacherDTO.setLastName(teacher.getLastName());
-            teacherDTO.setAge(teacher.getAge());
-            expectedTeacherDTOs.add(teacherDTO);
-        });
+        List<Teacher> teachers = JsonParser.buildObjectFromJSON(TeacherJsonData.TEACHERS_FOR_FIND_ALL_POSITIVE,
+                new TypeReference<>() {});
+        List<TeacherDTO> expectedTeacherDTOs = JsonParser.buildObjectFromJSON(TeacherJsonData.TEACHERS_FOR_FIND_ALL_POSITIVE,
+                new TypeReference<>() {});
 
         Mockito.when(teacherRepository.findAll()).thenReturn(teachers);
 
@@ -113,33 +100,29 @@ public class TeacherServiceImplTest {
 
     @Test
     public void getAllTeachersSortedBy_RetrieveTeachersSortedByAge_ReturnTeachers() {
-        Teacher teacherA = new Teacher("Bill", "Clinton", 56);
-        Teacher teacherB = new Teacher("Barack", "Obama", 34);
-        Teacher teacherC = new Teacher("Donald", "Trump", 25);
-        LinkedList<Teacher> teachers = new LinkedList<>(Arrays.asList(teacherC, teacherB, teacherA));
+        LinkedList<Teacher> teachers = JsonParser.buildObjectFromJSON(TeacherJsonData.TEACHERS_FOR_FIND_ALL_SORTED_BY_AGE_ASC,
+                new TypeReference<>() {});
+        List<TeacherDTO> expectedTeacherDTOs = JsonParser.buildObjectFromJSON(TeacherJsonData.TEACHERS_FOR_FIND_ALL_SORTED_BY_AGE_ASC,
+                new TypeReference<>() {});
 
         Mockito.when(teacherRepository.findAll(eq(Sort.by(Sort.Order.asc("age"))))).thenReturn(teachers);
 
         List<TeacherDTO> actualTeacherDTOs = teacherService.getAllTeachersSortedBy(TeacherSortingCriteria.ASCENDING_BY_AGE);
-        List<Integer> actualTeachersAge = actualTeacherDTOs.stream().map(TeacherDTO::getAge).collect(Collectors.toList());
-        List<Integer> expectedTeachersAge = teachers.stream().map(Teacher::getAge).collect(Collectors.toList());
 
-        Assertions.assertThat(actualTeachersAge)
-                .as("Actual list of teachers' age returned by Teacher Service using 'getAllTeachersSortedBy' " +
+        Assertions.assertThat(actualTeacherDTOs)
+                .as("Actual list of teachers returned by Teacher Service using 'getAllTeachersSortedBy' " +
                         "method differs from the expected one")
-                .isEqualTo(expectedTeachersAge);
+                .isEqualTo(expectedTeacherDTOs);
     }
 
     @Test
     public void getAllTeachersAssignedToCourse_RetrieveTeachersOfCourse_ReturnTeachers() {
-        Course course = new Course("Math");
-        CourseDTO courseDTO = new CourseDTO();
-        courseDTO.setName(course.getName());
-
-        Teacher teacherA = new Teacher("Tom", "Brown", 34);
-        Teacher teacherB = new Teacher("Mike", "White", 56);
-        Teacher teacherC = new Teacher("Nick", "Green", 28);
-        List<Teacher> teachers = Arrays.asList(teacherA, teacherB, teacherC);
+        Course course = JsonParser.buildObjectFromJSON(TeacherJsonData.COURSE_FOR_FIND_ALL_BY_COURSES_CONTAINING,
+                new TypeReference<>() {});
+        CourseDTO courseDTO = JsonParser.buildObjectFromJSON(TeacherJsonData.COURSE_FOR_FIND_ALL_BY_COURSES_CONTAINING,
+                new TypeReference<>() {});
+        List<Teacher> teachers = JsonParser.buildObjectFromJSON(TeacherJsonData.TEACHERS_FOR_FIND_ALL_BY_COURSES_CONTAINING,
+                new TypeReference<>() {});
 
         Mockito.when(teacherRepository.findAllByCoursesContaining(eq(course))).thenReturn(teachers);
         

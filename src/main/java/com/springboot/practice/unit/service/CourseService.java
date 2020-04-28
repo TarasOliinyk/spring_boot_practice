@@ -1,8 +1,8 @@
-package com.springboot.practice.service;
+package com.springboot.practice.unit.service;
 
 import com.springboot.practice.dto.CourseDTO;
 import com.springboot.practice.dto.TeacherDTO;
-import com.springboot.practice.service.criteria.CourseCriteria;
+import com.springboot.practice.unit.service.criteria.CourseCriteria;
 
 import java.time.LocalDate;
 import java.util.List;
