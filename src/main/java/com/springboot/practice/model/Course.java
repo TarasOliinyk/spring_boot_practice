@@ -1,9 +1,15 @@
 package com.springboot.practice.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
+import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
 import com.springboot.practice.utils.LocalDatePersistenceConverter;
-import lombok.*;
-import org.springframework.format.annotation.DateTimeFormat;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;
@@ -32,11 +38,15 @@ public class Course {
 
     @Column
     @Convert(converter = LocalDatePersistenceConverter.class)
+    @JsonDeserialize(using = LocalDateDeserializer.class)
+    @JsonSerialize(using = LocalDateSerializer.class)
 //    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) // This is not obligatory since the LocalDate takes care of validating the obtained date in a String format
     private LocalDate startDate;
 
     @Column
     @Convert(converter = LocalDatePersistenceConverter.class)
+    @JsonDeserialize(using = LocalDateDeserializer.class)
+    @JsonSerialize(using = LocalDateSerializer.class)
     private LocalDate endDate;
 
     public Course(String name) {

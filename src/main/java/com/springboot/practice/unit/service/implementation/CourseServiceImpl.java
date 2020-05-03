@@ -1,4 +1,4 @@
-package com.springboot.practice.service.implementation;
+package com.springboot.practice.unit.service.implementation;
 
 import com.springboot.practice.dto.CourseDTO;
 import com.springboot.practice.dto.TeacherDTO;
@@ -8,8 +8,8 @@ import com.springboot.practice.exceptions.course.IllegalCourseSearchException;
 import com.springboot.practice.model.Course;
 import com.springboot.practice.model.Teacher;
 import com.springboot.practice.repository.CourseRepository;
-import com.springboot.practice.service.CourseService;
-import com.springboot.practice.service.criteria.CourseCriteria;
+import com.springboot.practice.unit.service.CourseService;
+import com.springboot.practice.unit.service.criteria.CourseCriteria;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
 import org.springframework.stereotype.Service;

@@ -1,0 +1,20 @@
+[
+  {
+    "id": 43,
+    "name": "Biology",
+    "startDate": "2020-04-27",
+    "endDate": "2020-04-30"
+  },
+  {
+    "id": 53,
+    "name": "Anatomy",
+    "startDate": "2020-05-12",
+    "endDate": "2020-05-15"
+  },
+  {
+    "id": 63,
+    "name": "Geometry",
+    "startDate": "2020-06-23",
+    "endDate": "2020-07-28"
+  }
+]
