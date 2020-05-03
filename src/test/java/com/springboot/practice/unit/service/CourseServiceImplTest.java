@@ -41,7 +41,6 @@ public class CourseServiceImplTest {
     @Mock
     private CourseRepository courseRepository;
     private ModelMapper modelMapper = new ModelMapper();
-    private LocalDate today = LocalDate.now();
 
     @Before
     public void init() {
@@ -210,7 +209,7 @@ public class CourseServiceImplTest {
         CourseDTO actualCourseDTO = courseService.unassignTeacherFromCourse(courseDTO, firstTeacherDTO);
 
         Assertions.assertThat(actualCourseDTO.getTeachers().size())
-                .as("Course has not been update by Course Service using 'unassignTeacherFromCourse' method")
+                .as("Course has not been updated by Course Service using 'unassignTeacherFromCourse' method")
                 .isEqualTo(courseTeachers.size() - 1);
         Assertions.assertThat(actualCourseDTO.getTeachers().get(0))
                 .as("Wrong teacher has been unassigned from course by Course Service using " +

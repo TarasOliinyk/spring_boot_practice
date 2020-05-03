@@ -16,7 +16,9 @@ public enum CourseJsonData implements JsonDataSupplier {
     COURSE_FOR_UNASSIGN_TEACHER_FROM_COURSE("unassign_teacher_from_course/courseData.json"),
     COURSES_FOR_FIND_ALL_BY_TEACHERS_COUNT("find_all_by_teachers_count/coursesData.json"),
     COURSES_FOR_FIND_ALL_BY_END_DATE_LESS_THAN("find_all_by_end_date_less_than/coursesData.json"),
-    COURSES_FOR_FIND_ALL_THAT_LAST("find_all_that_last/coursesData.json");
+    COURSES_FOR_FIND_ALL_THAT_LAST("find_all_that_last/coursesData.json"),
+    COURSES_FOR_FIND_ALL_BY_START_DATE_GREATER_THAN("find_all_by_start_date_greater_than/coursesData.json"),
+    COURSES_FOR_FIND_ALL_BY_START_DATE_LESS_THAN_EQUAL_AND_END_DATE_GREATER_THAN_EQUAL("find_all_ongoing_courses/coursesData.json");
 
     private String filePath;
 

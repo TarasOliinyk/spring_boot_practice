@@ -99,7 +99,7 @@ public class TeacherServiceImplTest {
     }
 
     @Test
-    public void getAllTeachersSortedBy_RetrieveTeachersSortedByAge_ReturnTeachers() {
+    public void getAllTeachersSortedBy_RetrieveTeachersSortedByAgeAscending_ReturnTeachers() {
         LinkedList<Teacher> teachers = JsonParser.buildObjectFromJSON(TeacherJsonData.TEACHERS_FOR_FIND_ALL_SORTED_BY_AGE_ASC,
                 new TypeReference<>() {});
         List<TeacherDTO> expectedTeacherDTOs = JsonParser.buildObjectFromJSON(TeacherJsonData.TEACHERS_FOR_FIND_ALL_SORTED_BY_AGE_ASC,
