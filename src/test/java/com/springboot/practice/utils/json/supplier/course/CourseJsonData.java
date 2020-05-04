@@ -28,6 +28,6 @@ public enum CourseJsonData implements JsonDataSupplier {
 
     @Override
     public String getFilePath() {
-        return "unit/service/course/" + this.filePath;
+        return "testdata/service/course/" + this.filePath;
     }
 }
