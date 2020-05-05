@@ -19,8 +19,8 @@ import java.util.List;
 
 @Entity
 @Data
-@ToString(exclude = "teachers")
-@EqualsAndHashCode(exclude = {"teachers", "startDate", "endDate"})
+@ToString(exclude = {"teachers", "students"})
+@EqualsAndHashCode(exclude = {"teachers", "students", "startDate", "endDate"})
 @NoArgsConstructor
 public class Course {
 
@@ -35,6 +35,10 @@ public class Course {
     @JsonIgnore
     @ManyToMany
     private List<Teacher> teachers = new ArrayList<>();
+
+    @JsonIgnore
+    @ManyToMany
+    private List<Student> students = new ArrayList<>();
 
     @Column
     @Convert(converter = LocalDatePersistenceConverter.class)
