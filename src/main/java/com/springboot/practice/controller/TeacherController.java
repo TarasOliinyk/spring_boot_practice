@@ -33,6 +33,11 @@ public class TeacherController {
         return ResponseEntity.status(HttpStatus.FOUND).body(teacherService.getTeacher(id));
     }
 
+    @GetMapping("/teacher/{phoneNumber}")
+    public ResponseEntity<TeacherDTO> getTeacherByPhoneNumber(@PathVariable(name = "phoneNumber") String phoneNumber) {
+        return ResponseEntity.status(HttpStatus.FOUND).body(teacherService.getTeacherByPhoneNumber(phoneNumber));
+    }
+
     @GetMapping("/teacher/list")
     @ResponseStatus(value = HttpStatus.FOUND)
     public List<TeacherDTO> getAllTeachers() {

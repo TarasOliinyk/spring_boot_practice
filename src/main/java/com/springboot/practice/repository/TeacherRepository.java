@@ -14,6 +14,8 @@ public interface TeacherRepository extends CrudRepository<Teacher, Integer> {
 
     Optional<Teacher> findOneById(Integer id);
 
+    Optional<Teacher> findOneByPhoneNumber(String phoneNumber);
+
     List<Teacher> findAll();
 
     List<Teacher> findAll(Sort sort);

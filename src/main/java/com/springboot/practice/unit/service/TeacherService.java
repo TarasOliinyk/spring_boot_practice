@@ -12,6 +12,8 @@ public interface TeacherService {
 
     TeacherDTO getTeacher(Integer teacherId);
 
+    TeacherDTO getTeacherByPhoneNumber(String phoneNumber);
+
     List<TeacherDTO> getAllTeachers();
 
     List<TeacherDTO> getAllTeachersSortedBy(TeacherSortingCriteria sortingParameter);

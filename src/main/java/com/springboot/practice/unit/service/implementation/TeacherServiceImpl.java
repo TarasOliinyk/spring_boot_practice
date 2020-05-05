@@ -40,8 +40,15 @@ public class TeacherServiceImpl implements TeacherService {
     @Override
     public TeacherDTO getTeacher(Integer teacherId) {
         logger.info("Get teacher with id: " + teacherId);
-        return modelMapper.map(teacherRepository.findOneById(teacherId).orElseThrow(TeacherNotFoundException::new),
-                TeacherDTO.class);
+        return modelMapper.map(teacherRepository.findOneById(teacherId).orElseThrow(
+                () -> new TeacherNotFoundException("There is no teacher with id " + teacherId)), TeacherDTO.class);
+    }
+
+    @Override
+    public TeacherDTO getTeacherByPhoneNumber(String phoneNumber) {
+        logger.info("Get teacher with phone number: " + phoneNumber);
+        return modelMapper.map(teacherRepository.findOneByPhoneNumber(phoneNumber).orElseThrow(
+                () -> new TeacherNotFoundException("There is no teacher with phone number " + phoneNumber)), TeacherDTO.class);
     }
 
     @Override

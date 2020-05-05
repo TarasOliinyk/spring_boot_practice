@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 @ResponseStatus(HttpStatus.NOT_FOUND)
 public class TeacherNotFoundException extends RuntimeException {
 
-    public TeacherNotFoundException() {
-        super("Requested Teacher has not been found");
+    public TeacherNotFoundException(String message) {
+        super();
     }
 }
