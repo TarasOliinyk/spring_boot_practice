@@ -35,7 +35,7 @@ public class TeacherController {
 
     @GetMapping("/teacher/{phoneNumber}")
     public ResponseEntity<TeacherDTO> getTeacherByPhoneNumber(@PathVariable(name = "phoneNumber") String phoneNumber) {
-        return ResponseEntity.status(HttpStatus.FOUND).body(teacherService.getTeacherByPhoneNumber(phoneNumber));
+        return ResponseEntity.status(HttpStatus.OK).body(teacherService.getTeacherByPhoneNumber(phoneNumber));
     }
 
     @GetMapping("/teacher/list")
