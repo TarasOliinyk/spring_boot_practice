@@ -33,6 +33,7 @@ public class Teacher {
     public Integer age;
 
     @Column
+    @Pattern(regexp="(^$|[0-9]{10})")
     public String phoneNumber;
 
     @JsonIgnore

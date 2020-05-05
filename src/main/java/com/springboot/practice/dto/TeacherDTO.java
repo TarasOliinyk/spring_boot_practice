@@ -12,5 +12,6 @@ public class TeacherDTO {
     private String firstName;
     private String lastName;
     private Integer age;
+    public String phoneNumber;
     private List<Course> courses = new ArrayList<>();
 }
