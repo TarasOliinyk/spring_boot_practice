@@ -67,6 +67,14 @@ public class CourseController {
         return ResponseEntity.status(HttpStatus.OK).body(courseService.unassignTeacherFromCourse(courseDTO, teacherDTO));
     }
 
+//    public ResponseEntity<CourseDTO> assignStudent() {
+//
+//    }
+//
+//    public ResponseEntity<CourseDTO> unassignStudent() {
+//
+//    }
+
     @GetMapping("/course/teachers/{numberOfTeachers}")
     @ResponseStatus(HttpStatus.FOUND)
     public List<CourseDTO> getCoursesWithNumberOfAssignedTeachers(@PathVariable(value = "numberOfTeachers") int numberOfTeachers) {

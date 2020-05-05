@@ -27,4 +27,10 @@ public class Student {
 
     @ManyToMany(mappedBy = "students")
     private List<Course> courses = new ArrayList<>();
+
+    public Student(String firstName, String lastName, Integer age) {
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.age = age;
+    }
 }
