@@ -32,6 +32,9 @@ public class Teacher {
     @Min(value = 16, message = "Teacher has to be at least 16 years old")
     public Integer age;
 
+    @Column
+    public String phoneNumber;
+
     @JsonIgnore
     @ManyToMany(mappedBy = "teachers")
     private List<Course> courses = new ArrayList<>();
@@ -40,5 +43,12 @@ public class Teacher {
         this.firstName = firstName;
         this.lastName = lastName;
         this.age = age;
+    }
+
+    public Teacher(String firstName, String lastName, Integer age, String phoneNumber) {
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.age = age;
+        this.phoneNumber = phoneNumber;
     }
 }
