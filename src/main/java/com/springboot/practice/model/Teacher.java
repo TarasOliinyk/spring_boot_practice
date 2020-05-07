@@ -10,9 +10,8 @@ import java.util.List;
 
 @Entity
 @Data
-@ToString(exclude = "courses")
-@EqualsAndHashCode(exclude = "courses")
 @NoArgsConstructor
+@EqualsAndHashCode(exclude = "courses")
 public class Teacher {
 
     @Id

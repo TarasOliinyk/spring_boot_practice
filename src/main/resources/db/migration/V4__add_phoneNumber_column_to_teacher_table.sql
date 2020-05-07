@@ -1,2 +1,2 @@
 ALTER TABLE `teacher`
-ADD phone_number VARCHAR (50) NOT NULL;
+ADD phone_number VARCHAR (50) DEFAULT NULL;

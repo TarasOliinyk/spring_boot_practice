@@ -32,21 +32,21 @@ public class TeacherServiceImpl implements TeacherService {
 
     @Override
     public TeacherDTO createTeacher(String firstName, String lastName, Integer age) {
-        logger.info(String.format("Create teacher with first name: '%s', last name '%s', age: '%s'", firstName, lastName,
+        logger.info(String.format("Create teacher with first name '%s', last name '%s', age '%s'", firstName, lastName,
                 age));
         return modelMapper.map(teacherRepository.save(new Teacher(firstName, lastName, age)), TeacherDTO.class);
     }
 
     @Override
     public TeacherDTO getTeacher(Integer teacherId) {
-        logger.info("Get teacher with id: " + teacherId);
+        logger.info("Get teacher with id " + teacherId);
         return modelMapper.map(teacherRepository.findOneById(teacherId).orElseThrow(
                 () -> new TeacherNotFoundException("There is no teacher with id " + teacherId)), TeacherDTO.class);
     }
 
     @Override
     public TeacherDTO getTeacherByPhoneNumber(String phoneNumber) {
-        logger.info("Get teacher with phone number: " + phoneNumber);
+        logger.info("Get teacher with phone number " + phoneNumber);
         return modelMapper.map(teacherRepository.findOneByPhoneNumber(phoneNumber).orElseThrow(
                 () -> new TeacherNotFoundException("There is no teacher with phone number " + phoneNumber)), TeacherDTO.class);
     }
@@ -79,15 +79,15 @@ public class TeacherServiceImpl implements TeacherService {
 
     @Override
     public List<TeacherDTO> getAllTeachersAssignedToCourse(CourseDTO courseDTO) {
-        logger.info("Get all teachers assigned to course " + courseDTO.toString());
-        Type listType = new TypeToken<List<TeacherDTO>>(){}.getType();
+        logger.info("Get all teachers assigned to course with id " + courseDTO.getId());
         Course course = modelMapper.map(courseDTO, Course.class);
+        Type listType = new TypeToken<List<TeacherDTO>>(){}.getType();
         return modelMapper.map(teacherRepository.findAllByCoursesContaining(course), listType);
     }
 
     @Override
     public void deleteTeacher(Integer teacherId) {
-        logger.info("Delete teacher with id: " + teacherId);
+        logger.info("Delete teacher with id " + teacherId);
         teacherRepository.deleteById(teacherId);
     }
 }

@@ -1,5 +1,6 @@
 package com.springboot.practice.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 
 import javax.persistence.*;
@@ -25,6 +26,7 @@ public class Student {
     @Column(nullable = false)
     private Integer age;
 
+    @JsonIgnore
     @ManyToMany(mappedBy = "students")
     private List<Course> courses = new ArrayList<>();
 

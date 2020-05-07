@@ -13,6 +13,6 @@ DROP TABLE IF EXISTS `course_students`;
 CREATE TABLE `course_students` (
   `courses_id` int(11) NOT NULL,
   `students_id` int(11) NOT NULL,
-  CONSTRAINT `course_student_courses_fk` FOREIGN KEY (`courses_id`) REFERENCES `course` (`id`),
-  CONSTRAINT `course_student_students_fk` FOREIGN KEY (`student_id`) REFERENCES `student` (`id`)
+  CONSTRAINT `course_students_courses_fk` FOREIGN KEY (`courses_id`) REFERENCES `course` (`id`),
+  CONSTRAINT `course_students_students_fk` FOREIGN KEY (`students_id`) REFERENCES `student` (`id`)
 );

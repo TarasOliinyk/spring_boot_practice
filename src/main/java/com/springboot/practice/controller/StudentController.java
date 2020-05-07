@@ -30,9 +30,14 @@ public class StudentController {
         return ResponseEntity.status(HttpStatus.OK).body(studentService.updateStudent(studentDTO));
     }
 
+    @GetMapping("/student/{studentId}/courses_count")
+    public ResponseEntity<Integer> getNumberOfCoursesAssignedToStudent(@PathVariable(name = "studentId") Integer studentId) {
+        return ResponseEntity.status(HttpStatus.OK).body(studentService.getNumberOfCoursesAssignedToStudent(studentId));
+    }
+
     @DeleteMapping("/student/{id}")
     @ResponseStatus(value = HttpStatus.ACCEPTED)
-    public void deleteTeacher(@PathVariable(name = "id") Integer id) {
-        studentService.getStudent(id);
+    public void deleteStudent(@PathVariable(name = "id") Integer id) {
+        studentService.deleteStudent(id);
     }
 }

@@ -12,7 +12,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class StudentServiceImpl implements StudentService {
-    private static Logger logger = LoggerFactory.getLogger(TeacherServiceImpl.class);
+    private static Logger logger = LoggerFactory.getLogger(StudentServiceImpl.class);
     private final StudentRepository studentRepository;
     private final ModelMapper modelMapper;
 
@@ -23,28 +23,34 @@ public class StudentServiceImpl implements StudentService {
 
     @Override
     public StudentDTO createStudent(String firstName, String lastName, Integer age) {
-        logger.info(String.format("Create student with first name: '%s', last name '%s', age: '%s'", firstName, lastName,
+        logger.info(String.format("Create student with first name '%s', last name '%s', age '%s'", firstName, lastName,
                 age));
         return modelMapper.map(studentRepository.save(new Student(firstName, lastName, age)), StudentDTO.class);
     }
 
     @Override
     public StudentDTO getStudent(Integer studentId) {
-        logger.info("Get student with id: " + studentId);
+        logger.info("Get student with id " + studentId);
         return modelMapper.map(studentRepository.findOneById(studentId).orElseThrow(
                 () -> new StudentNotFoundException("There is no student with id " + studentId)), StudentDTO.class);
     }
 
     @Override
     public StudentDTO updateStudent(StudentDTO studentDTO) {
-        logger.info("Update student " + studentDTO.toString());
+        logger.info(String.format("Update student with id %s, updated student: %s", studentDTO.getId(), studentDTO.toString()));
         Student student = modelMapper.map(studentDTO, Student.class);
         return modelMapper.map(studentRepository.save(student), StudentDTO.class);
     }
 
     @Override
+    public int getNumberOfCoursesAssignedToStudent(Integer studentId) {
+        logger.info("Get number of courses assigned to student with id " + studentId);
+        return getStudent(studentId).getCourses().size();
+    }
+
+    @Override
     public void deleteStudent(Integer studentId) {
-        logger.info("Delete student with id: " + studentId);
+        logger.info("Delete student with id " + studentId);
         studentRepository.deleteById(studentId);
     }
 }

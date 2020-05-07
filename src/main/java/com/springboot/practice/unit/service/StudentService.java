@@ -10,5 +10,7 @@ public interface StudentService {
 
     StudentDTO updateStudent(StudentDTO studentDTO);
 
+    int getNumberOfCoursesAssignedToStudent(Integer studentId);
+
     void deleteStudent(Integer studentId);
 }
