@@ -10,37 +10,27 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @EqualsAndHashCode(exclude = "courses")
-public class Teacher {
+public class Student {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Column
+    @Column(nullable = false)
     private String firstName;
 
-    @Column
+    @Column(nullable = false)
     private String lastName;
 
-    @Column
-    public Integer age;
+    @Column(nullable = false)
+    private Integer age;
 
-    @Column
-    public String phoneNumber;
-
-    @ManyToMany(mappedBy = "teachers")
+    @ManyToMany(mappedBy = "students")
     private List<Course> courses = new ArrayList<>();
 
-    public Teacher(String firstName, String lastName, Integer age) {
+    public Student(String firstName, String lastName, Integer age) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.age = age;
-    }
-
-    public Teacher(String firstName, String lastName, Integer age, String phoneNumber) {
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.age = age;
-        this.phoneNumber = phoneNumber;
     }
 }

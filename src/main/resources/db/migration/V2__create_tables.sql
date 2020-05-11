@@ -24,5 +24,5 @@ CREATE TABLE `course_teachers` (
   `courses_id` int(11) NOT NULL,
   `teachers_id` int(11) NOT NULL,
   CONSTRAINT `course_teachers_courses_fk` FOREIGN KEY (`courses_id`) REFERENCES `course` (`id`),
-  CONSTRAINT `course_teachers_teacher_fk` FOREIGN KEY (`teachers_id`) REFERENCES `teacher` (`id`)
+  CONSTRAINT `course_teachers_teachers_fk` FOREIGN KEY (`teachers_id`) REFERENCES `teacher` (`id`)
 );

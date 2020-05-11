@@ -45,8 +45,7 @@ public class TeacherControllerTest {
                 new TypeReference<>() {});
         String expectedTeacherDTOAsJSON = JsonParser.readJSON(TeacherJsonData.TEACHER_FOR_CREATE_ONE_POSITIVE);
 
-        Mockito.when(teacherService.createTeacher(eq(expectedTeacherDTO.getFirstName()), eq(expectedTeacherDTO.getLastName()),
-                eq(expectedTeacherDTO.getAge()))).thenReturn(expectedTeacherDTO);
+        Mockito.when(teacherService.createTeacher(eq(expectedTeacherDTO))).thenReturn(expectedTeacherDTO);
 
         String response = mockMvc.perform(MockMvcRequestBuilders.post("/teacher")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -124,7 +123,7 @@ public class TeacherControllerTest {
                 TeacherJsonData.TEACHERS_FOR_FIND_ALL_BY_COURSES_CONTAINING, new TypeReference<>() {});
 
         Mockito.when(courseService.getCourse(eq(courseDTO.getId()))).thenReturn(courseDTO);
-        Mockito.when(teacherService.getAllTeachersAssignedToCourse(eq(courseDTO))).thenReturn(expectedTeacherDTOs);
+        Mockito.when(teacherService.getAllTeachersAssignedToCourse(eq(courseDTO.getId()))).thenReturn(expectedTeacherDTOs);
 
         String response = mockMvc.perform(MockMvcRequestBuilders.get("/teachers/course/" + courseDTO.getId()))
                 .andDo(print()).andExpect(status().isFound()).andReturn().getResponse().getContentAsString();

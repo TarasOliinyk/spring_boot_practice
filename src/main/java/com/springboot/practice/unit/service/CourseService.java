@@ -1,7 +1,6 @@
 package com.springboot.practice.unit.service;
 
 import com.springboot.practice.dto.CourseDTO;
-import com.springboot.practice.dto.TeacherDTO;
 import com.springboot.practice.unit.service.criteria.CourseCriteria;
 
 import java.time.LocalDate;
@@ -19,11 +18,19 @@ public interface CourseService {
 
     List<CourseDTO> getAllCourses();
 
-    List<CourseDTO> getAllCoursesAssignedToTeacher(TeacherDTO teacherDTO);
+    List<CourseDTO> getAllCoursesAssignedToTeacher(Integer teacherId);
 
-    CourseDTO assignTeacherToCourse(CourseDTO courseDTO, TeacherDTO teacherDTO);
+    List<CourseDTO> getAllCoursesAssignedToStudent(Integer studentId);
 
-    CourseDTO unassignTeacherFromCourse(CourseDTO courseDTO, TeacherDTO teacherDTO);
+    List<CourseDTO> getAllCoursesWithAssignedTeacherAndStudent(Integer teacherId, Integer studentId);
+
+    CourseDTO assignTeacherToCourse(Integer courseId, Integer teacherId);
+
+    CourseDTO assignStudentToCourse(Integer courseId, Integer studentId);
+
+    CourseDTO unassignTeacherFromCourse(Integer courseId, Integer teacherId);
+
+    CourseDTO unassignStudentFromCourse(Integer courseId, Integer studentId);
 
     List<CourseDTO> getCoursesWithNumberOfAssignedTeachers(int numberOfTeachers);
 

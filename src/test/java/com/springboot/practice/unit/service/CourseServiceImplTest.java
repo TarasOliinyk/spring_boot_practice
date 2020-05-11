@@ -7,6 +7,8 @@ import com.springboot.practice.exceptions.course.IllegalCourseArgumentException;
 import com.springboot.practice.model.Course;
 import com.springboot.practice.model.Teacher;
 import com.springboot.practice.repository.CourseRepository;
+import com.springboot.practice.repository.StudentRepository;
+import com.springboot.practice.repository.TeacherRepository;
 import com.springboot.practice.unit.service.criteria.CourseCriteria;
 import com.springboot.practice.unit.service.implementation.CourseServiceImpl;
 import com.springboot.practice.utils.json.JsonParser;
@@ -19,11 +21,13 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.modelmapper.ModelMapper;
+import org.modelmapper.TypeToken;
 
 import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
 import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
+import java.lang.reflect.Type;
 import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.List;
@@ -40,11 +44,15 @@ public class CourseServiceImplTest {
     private CourseService courseService;
     @Mock
     private CourseRepository courseRepository;
+    @Mock
+    private TeacherRepository teacherRepository;
+    @Mock
+    private StudentRepository studentRepository;
     private ModelMapper modelMapper = new ModelMapper();
 
     @Before
     public void init() {
-        courseService = new CourseServiceImpl(courseRepository, modelMapper);
+        courseService = new CourseServiceImpl(courseRepository, teacherRepository, studentRepository, modelMapper);
     }
 
     // Positive scenarios:
@@ -150,9 +158,10 @@ public class CourseServiceImplTest {
         List<Course> expectedCourses = JsonParser.buildObjectFromJSON(CourseJsonData.COURSES_FOR_FIND_ALL_BY_TEACHERS_CONTAINING,
                 new TypeReference<>() {});
 
+        Mockito.when(teacherRepository.findOneById(teacher.getId())).thenReturn(Optional.of(teacher));
         Mockito.when(courseRepository.findAllByTeachersContaining(eq(teacher))).thenReturn(expectedCourses);
 
-        List<CourseDTO> actualCourses = courseService.getAllCoursesAssignedToTeacher(teacherDTO);
+        List<CourseDTO> actualCourses = courseService.getAllCoursesAssignedToTeacher(teacherDTO.getId());
 
         Assertions.assertThat(actualCourses)
                 .usingFieldByFieldElementComparator()
@@ -167,16 +176,12 @@ public class CourseServiceImplTest {
                 new TypeReference<>() {});
         Course course = JsonParser.buildObjectFromJSON(CourseJsonData.COURSE_FOR_ASSIGN_TEACHER_TO_COURSE,
                 new TypeReference<>() {});
-        course.getTeachers().add(teacher);
 
-        TeacherDTO teacherDTO = JsonParser.buildObjectFromJSON(CourseJsonData.TEACHER_FOR_ASSIGN_TEACHER_TO_COURSE,
-                new TypeReference<>() {});
-        CourseDTO courseDTO = JsonParser.buildObjectFromJSON(CourseJsonData.COURSE_FOR_ASSIGN_TEACHER_TO_COURSE,
-                new TypeReference<>() {});
-
+        Mockito.when(courseRepository.findOneById(eq(course.getId()))).thenReturn(Optional.of(course));
+        Mockito.when(teacherRepository.findOneById(eq(teacher.getId()))).thenReturn(Optional.of(teacher));
         Mockito.when(courseRepository.save(eq(course))).thenReturn(course);
 
-        CourseDTO actualCourseDTO = courseService.assignTeacherToCourse(courseDTO, teacherDTO);
+        CourseDTO actualCourseDTO = courseService.assignTeacherToCourse(course.getId(), teacher.getId());
 
         Assertions.assertThat(actualCourseDTO.getTeachers().size())
                 .as("Course has not been updated by Course Service using 'assignTeacherToCourse' method")
@@ -184,7 +189,7 @@ public class CourseServiceImplTest {
         Assertions.assertThat(actualCourseDTO.getTeachers().get(0))
                 .as("Expected teacher has not been assigned to course by Course Service using " +
                         "'assignTeacherToCourse' method")
-                .isEqualTo(teacher);
+                .isEqualToComparingFieldByField(teacher);
     }
 
     @Test
@@ -200,13 +205,16 @@ public class CourseServiceImplTest {
 
         CourseDTO courseDTO = JsonParser.buildObjectFromJSON(CourseJsonData.COURSE_FOR_UNASSIGN_TEACHER_FROM_COURSE,
                 new TypeReference<>() {});
-        courseDTO.getTeachers().addAll(courseTeachers);
+        courseDTO.getTeachers().addAll(courseTeacherDTOs);
 
+        Teacher firstTeacher = courseTeachers.get(0);
         TeacherDTO firstTeacherDTO = courseTeacherDTOs.get(0);
 
+        Mockito.when(courseRepository.findOneById(eq(course.getId()))).thenReturn(Optional.of(course));
+        Mockito.when(teacherRepository.findOneById(eq(firstTeacher.getId()))).thenReturn(Optional.of(firstTeacher));
         Mockito.when(courseRepository.save(eq(course))).thenReturn(course);
 
-        CourseDTO actualCourseDTO = courseService.unassignTeacherFromCourse(courseDTO, firstTeacherDTO);
+        CourseDTO actualCourseDTO = courseService.unassignTeacherFromCourse(courseDTO.getId(), firstTeacherDTO.getId());
 
         Assertions.assertThat(actualCourseDTO.getTeachers().size())
                 .as("Course has not been updated by Course Service using 'unassignTeacherFromCourse' method")
@@ -214,7 +222,7 @@ public class CourseServiceImplTest {
         Assertions.assertThat(actualCourseDTO.getTeachers().get(0))
                 .as("Wrong teacher has been unassigned from course by Course Service using " +
                         "'unassignTeacherFromCourse' method")
-                .isEqualTo(courseTeachers.get(1));
+                .isEqualToComparingFieldByField(courseTeachers.get(1));
     }
 
     @Test
@@ -228,16 +236,17 @@ public class CourseServiceImplTest {
 
         List<Course> expectedCourses = courses.stream().filter(course -> course.getTeachers().size() == 4)
                 .collect(Collectors.toList());
+        Type listType = new TypeToken<List<CourseDTO>>(){}.getType();
+        List<CourseDTO> expectedCourseDTOs = modelMapper.map(expectedCourses, listType);
 
         Mockito.when(courseRepository.findAllByTeachersCount(eq(4))).thenReturn(expectedCourses);
 
         List<CourseDTO> actualCourses = courseService.getCoursesWithNumberOfAssignedTeachers(4);
 
         Assertions.assertThat(actualCourses)
-                .usingFieldByFieldElementComparator()
                 .as("Wrong courses have been returned by Course Service after using " +
                         "'getCoursesWithNumberOfAssignedTeachers' method")
-                .isEqualTo(expectedCourses);
+                .isEqualTo(expectedCourseDTOs);
     }
 
     @Test
@@ -305,7 +314,9 @@ public class CourseServiceImplTest {
     public void createCourse_CreateCourseWithEmptyName_TriggerValidation() {
         ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
         Validator validator = factory.getValidator();
-        Set<ConstraintViolation<Course>> violations = validator.validate(new Course(""));
+        CourseDTO courseDTO = new CourseDTO();
+        courseDTO.setName("");
+        Set<ConstraintViolation<CourseDTO>> violations = validator.validate(courseDTO);
 
         Assertions.assertThat(violations.size())
                 .as("Validation of an empty course name has not been initiated")

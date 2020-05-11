@@ -5,6 +5,7 @@ import com.springboot.practice.dto.CourseDTO;
 import com.springboot.practice.dto.TeacherDTO;
 import com.springboot.practice.model.Course;
 import com.springboot.practice.model.Teacher;
+import com.springboot.practice.repository.CourseRepository;
 import com.springboot.practice.repository.TeacherRepository;
 import com.springboot.practice.unit.service.TeacherService;
 import com.springboot.practice.unit.service.criteria.TeacherSortingCriteria;
@@ -36,6 +37,8 @@ public class TeacherServiceTest {
     private JdbcTemplate jdbcTemplate;
     @MockBean // ToDo: Mocked for testing as a POC
     private TeacherRepository teacherRepository;
+    @MockBean // ToDo: Mocked for testing as a POC
+    private CourseRepository courseRepository;
 
     @Test
     public void createTeacher_CreateNewTeacher_ReturnCreatedTeacher() {
@@ -46,8 +49,7 @@ public class TeacherServiceTest {
 
         Mockito.when(teacherRepository.save(eq(teacher))).thenReturn(teacher);
 
-        TeacherDTO actualTeacherDTO = teacherService.createTeacher(teacher.getFirstName(), teacher.getLastName(),
-                teacher.getAge());
+        TeacherDTO actualTeacherDTO = teacherService.createTeacher(expectedTeacherDTO);
 
         Assertions.assertThat(actualTeacherDTO)
                 .as("Actual teacher returned by Teacher Service using 'createTeacher' method differs from " +
@@ -113,9 +115,10 @@ public class TeacherServiceTest {
         List<Teacher> expectedTeachers = JsonParser.buildObjectFromJSON(TeacherJsonData.TEACHERS_FOR_FIND_ALL_BY_COURSES_CONTAINING,
                 new TypeReference<>() {});
 
+        Mockito.when(courseRepository.findOneById(eq(course.getId()))).thenReturn(Optional.of(course));
         Mockito.when(teacherRepository.findAllByCoursesContaining(eq(course))).thenReturn(expectedTeachers);
 
-        List<TeacherDTO> actualTeacherDTOs = teacherService.getAllTeachersAssignedToCourse(courseDTO);
+        List<TeacherDTO> actualTeacherDTOs = teacherService.getAllTeachersAssignedToCourse(courseDTO.getId());
 
         Assertions.assertThat(actualTeacherDTOs)
                 .usingFieldByFieldElementComparator()

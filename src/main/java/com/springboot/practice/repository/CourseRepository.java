@@ -1,6 +1,7 @@
 package com.springboot.practice.repository;
 
 import com.springboot.practice.model.Course;
+import com.springboot.practice.model.Student;
 import com.springboot.practice.model.Teacher;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
@@ -18,6 +19,10 @@ public interface CourseRepository extends CrudRepository<Course, Integer>, Custo
     List<Course> findAll();
 
     List<Course> findAllByTeachersContaining(Teacher teacher);
+
+    List<Course> findAllByStudentsContaining(Student student);
+
+    List<Course> findAllByTeachersContainingAndStudentsContaining(Teacher teacher, Student student);
 
     List<Course> findAllByStartDateGreaterThan(LocalDate date);
 

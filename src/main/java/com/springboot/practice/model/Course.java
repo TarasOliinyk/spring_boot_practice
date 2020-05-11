@@ -1,27 +1,20 @@
 package com.springboot.practice.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.annotation.*;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
 import com.springboot.practice.utils.LocalDatePersistenceConverter;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotEmpty;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
 @Entity
 @Data
-@ToString(exclude = "teachers")
-@EqualsAndHashCode(exclude = {"teachers", "startDate", "endDate"})
 @NoArgsConstructor
+@EqualsAndHashCode(exclude = {"teachers", "students", "startDate", "endDate"})
 public class Course {
 
     @Id
@@ -29,12 +22,7 @@ public class Course {
     private Integer id;
 
     @Column
-    @NotEmpty(message = "Course cannot be registered without a name")
     private String name;
-
-    @JsonIgnore
-    @ManyToMany
-    private List<Teacher> teachers = new ArrayList<>();
 
     @Column
     @Convert(converter = LocalDatePersistenceConverter.class)
@@ -48,6 +36,12 @@ public class Course {
     @JsonDeserialize(using = LocalDateDeserializer.class)
     @JsonSerialize(using = LocalDateSerializer.class)
     private LocalDate endDate;
+
+    @ManyToMany
+    private List<Teacher> teachers = new ArrayList<>();
+
+    @ManyToMany
+    private List<Student> students = new ArrayList<>();
 
     public Course(String name) {
         this.name = name;
