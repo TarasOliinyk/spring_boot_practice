@@ -16,8 +16,7 @@ public class StudentController {
 
     @PostMapping("/student")
     public ResponseEntity<StudentDTO> createStudent(@RequestBody StudentDTO studentDTO) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(studentService.createStudent(studentDTO.getFirstName(),
-                studentDTO.getLastName(), studentDTO.getAge()));
+        return ResponseEntity.status(HttpStatus.CREATED).body(studentService.createStudent(studentDTO));
     }
 
     @GetMapping("/student/{id}")

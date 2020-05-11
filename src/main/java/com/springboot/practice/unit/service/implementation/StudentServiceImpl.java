@@ -22,10 +22,10 @@ public class StudentServiceImpl implements StudentService {
     }
 
     @Override
-    public StudentDTO createStudent(String firstName, String lastName, Integer age) {
-        logger.info(String.format("Create student with first name '%s', last name '%s', age '%s'", firstName, lastName,
-                age));
-        return modelMapper.map(studentRepository.save(new Student(firstName, lastName, age)), StudentDTO.class);
+    public StudentDTO createStudent(StudentDTO studentDTO) {
+        logger.info("Create student " + studentDTO.toString());
+        return modelMapper.map(studentRepository.save(new Student(studentDTO.getFirstName(), studentDTO.getLastName(),
+                studentDTO.getAge())), StudentDTO.class);
     }
 
     @Override

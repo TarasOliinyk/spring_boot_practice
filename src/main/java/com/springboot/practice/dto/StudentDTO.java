@@ -1,16 +1,24 @@
 package com.springboot.practice.dto;
 
-import com.springboot.practice.model.Course;
-import lombok.Data;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import lombok.*;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Data
+@EqualsAndHashCode(exclude = "courses")
+@ToString(exclude = "courses")
 public class StudentDTO {
+
     private Integer id;
+
     private String firstName;
+
     private String lastName;
+
     private Integer age;
-    private List<Course> courses = new ArrayList<>();
+
+    @JsonIgnore
+    private List<CourseDTO> courses = new ArrayList<>();
 }

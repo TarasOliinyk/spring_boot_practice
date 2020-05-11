@@ -4,7 +4,7 @@ import com.springboot.practice.dto.StudentDTO;
 
 public interface StudentService {
 
-    StudentDTO createStudent(String firstName, String lastName, Integer age);
+    StudentDTO createStudent(StudentDTO studentDTO);
 
     StudentDTO getStudent(Integer studentId);
 

@@ -5,6 +5,7 @@ import com.springboot.practice.dto.CourseDTO;
 import com.springboot.practice.dto.TeacherDTO;
 import com.springboot.practice.model.Course;
 import com.springboot.practice.model.Teacher;
+import com.springboot.practice.repository.CourseRepository;
 import com.springboot.practice.repository.TeacherRepository;
 import com.springboot.practice.unit.service.criteria.TeacherSortingCriteria;
 import com.springboot.practice.unit.service.implementation.TeacherServiceImpl;
@@ -33,11 +34,13 @@ public class TeacherServiceImplTest {
     private TeacherService teacherService;
     @Mock
     private TeacherRepository teacherRepository;
+    @Mock
+    private CourseRepository courseRepository;
     private ModelMapper modelMapper = new ModelMapper();
 
     @Before
     public void init() {
-        teacherService = new TeacherServiceImpl(teacherRepository, modelMapper);
+        teacherService = new TeacherServiceImpl(teacherRepository, courseRepository, modelMapper);
     }
 
     // Positive scenarios:
@@ -51,8 +54,7 @@ public class TeacherServiceImplTest {
 
         Mockito.when(teacherRepository.save(eq(teacher))).thenReturn(teacher);
 
-        TeacherDTO actualTeacherDTO = teacherService.createTeacher(teacher.getFirstName(), teacher.getLastName(),
-                teacher.getAge());
+        TeacherDTO actualTeacherDTO = teacherService.createTeacher(expectedTeacherDTO);
 
         Assertions.assertThat(actualTeacherDTO)
                 .as("Actual teacher created by Teacher Service using 'createTeacher' method differs from " +
@@ -124,9 +126,10 @@ public class TeacherServiceImplTest {
         List<Teacher> teachers = JsonParser.buildObjectFromJSON(TeacherJsonData.TEACHERS_FOR_FIND_ALL_BY_COURSES_CONTAINING,
                 new TypeReference<>() {});
 
+        Mockito.when(courseRepository.findOneById(course.getId())).thenReturn(Optional.of(course));
         Mockito.when(teacherRepository.findAllByCoursesContaining(eq(course))).thenReturn(teachers);
         
-        List<TeacherDTO> actualTeacherDTOs = teacherService.getAllTeachersAssignedToCourse(courseDTO);
+        List<TeacherDTO> actualTeacherDTOs = teacherService.getAllTeachersAssignedToCourse(courseDTO.getId());
 
         Assertions.assertThat(actualTeacherDTOs)
                 .as("Actual number of Teachers returned by Course Service using " +
@@ -149,26 +152,35 @@ public class TeacherServiceImplTest {
 
     @Test
     public void createTeacher_CreateTeacherWithEmptyFirstName_TriggerValidation() {
-        Teacher teacherToTest = new Teacher("", "Brown", 45);
+        TeacherDTO teacherDTO = new TeacherDTO();
+        teacherDTO.setFirstName("");
+        teacherDTO.setLastName("Brown");
+        teacherDTO.setAge(45);
         String expectedValidationMessage = "Teacher cannot be registered without first name";
 
-        teacherFieldValidationTest(teacherToTest, expectedValidationMessage);
+        teacherFieldValidationTest(teacherDTO, expectedValidationMessage);
     }
 
     @Test
     public void createTeacher_CreateTeacherWithEmptyLastName_TriggerValidation() {
-        Teacher teacherToTest = new Teacher("Mark", "", 54);
+        TeacherDTO teacherDTO = new TeacherDTO();
+        teacherDTO.setFirstName("Mark");
+        teacherDTO.setLastName("");
+        teacherDTO.setAge(54);
         String expectedValidationMessage = "Teacher cannot be registered without last name";
 
-        teacherFieldValidationTest(teacherToTest, expectedValidationMessage);
+        teacherFieldValidationTest(teacherDTO, expectedValidationMessage);
     }
 
     @Test
     public void createTeacher_CreateTeacherYoungerThan16YearsOld_TriggerValidation() {
-        Teacher teacherToTest = new Teacher("Jim", "Nelson", 14);
+        TeacherDTO teacherDTO = new TeacherDTO();
+        teacherDTO.setFirstName("Jim");
+        teacherDTO.setLastName("Nelson");
+        teacherDTO.setAge(14);
         String expectedValidationMessage = "Teacher has to be at least 16 years old";
 
-        teacherFieldValidationTest(teacherToTest, expectedValidationMessage);
+        teacherFieldValidationTest(teacherDTO, expectedValidationMessage);
     }
 
 //======================================================================================================================
@@ -176,13 +188,13 @@ public class TeacherServiceImplTest {
     /**
      * Test method responsible for verification of fields with applied constraints belonging to a Teacher object.
      *
-     * @param teacher                   - Teacher object with a field expected to be validated
+     * @param teacherDTO                - Teacher object with a field expected to be validated
      * @param expectedValidationMessage - Expected validation message
      */
-    private void teacherFieldValidationTest(Teacher teacher, String expectedValidationMessage) {
+    private void teacherFieldValidationTest(TeacherDTO teacherDTO, String expectedValidationMessage) {
         ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
         Validator validator = factory.getValidator();
-        Set<ConstraintViolation<Teacher>> violations = validator.validate(teacher);
+        Set<ConstraintViolation<TeacherDTO>> violations = validator.validate(teacherDTO);
 
         Assertions.assertThat(violations.size())
                 .as("Expected field validation has not been initiated")

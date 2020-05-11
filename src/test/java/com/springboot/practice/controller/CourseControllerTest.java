@@ -131,7 +131,7 @@ public class CourseControllerTest {
                 CourseJsonData.COURSES_FOR_FIND_ALL_BY_TEACHERS_CONTAINING, new TypeReference<>() {});
 
         Mockito.when(teacherService.getTeacher(eq(teacherDTO.getId()))).thenReturn(teacherDTO);
-        Mockito.when(courseService.getAllCoursesAssignedToTeacher(eq(teacherDTO))).thenReturn(expectedCourseDTOs);
+        Mockito.when(courseService.getAllCoursesAssignedToTeacher(eq(teacherDTO.getId()))).thenReturn(expectedCourseDTOs);
 
         String response = mockMvc.perform(MockMvcRequestBuilders.get("/courses/teacher/" + teacherDTO.getId()))
                 .andDo(print()).andExpect(status().isFound()).andReturn().getResponse().getContentAsString();
@@ -152,11 +152,11 @@ public class CourseControllerTest {
                 new TypeReference<>() {});
         CourseDTO courseDTO = JsonParser.buildObjectFromJSON(CourseJsonData.COURSE_FOR_ASSIGN_TEACHER_TO_COURSE,
                 new TypeReference<>() {});
-        courseDTO.getTeachers().add(teacher);
+        courseDTO.getTeachers().add(teacherDTO);
 
         Mockito.when(courseService.getCourse(eq(courseDTO.getId()))).thenReturn(courseDTO);
         Mockito.when(teacherService.getTeacher(eq(teacher.getId()))).thenReturn(teacherDTO);
-        Mockito.when(courseService.assignTeacherToCourse(eq(courseDTO), eq(teacherDTO))).thenReturn(courseDTO);
+        Mockito.when(courseService.assignTeacherToCourse(eq(courseDTO.getId()), eq(teacherDTO.getId()))).thenReturn(courseDTO);
 
         String response = mockMvc.perform(MockMvcRequestBuilders.put(String.format("/course/%s/add_teacher/%s",
                 courseDTO.getId(), teacherDTO.getId()))).andDo(print()).andExpect(status().isOk()).andReturn()
@@ -170,7 +170,7 @@ public class CourseControllerTest {
         Assertions.assertThat(actualCourseDTO.getTeachers().get(0))
                 .as("Expected teacher has not been assigned to course by Course Controller using " +
                         "'assignTeacher' method")
-                .isEqualTo(teacher);
+                .isEqualToComparingFieldByField(teacher);
     }
 
     @Test
@@ -182,14 +182,14 @@ public class CourseControllerTest {
         TeacherDTO teacherDTOToRemove = teacherDTOs.get(0);
         CourseDTO courseDTO = JsonParser.buildObjectFromJSON(CourseJsonData.COURSE_FOR_UNASSIGN_TEACHER_FROM_COURSE,
                 new TypeReference<>() {});
-        courseDTO.getTeachers().addAll(teachers);
+        courseDTO.getTeachers().addAll(teacherDTOs);
 
         Mockito.when(courseService.getCourse(eq(courseDTO.getId()))).thenReturn(courseDTO);
         Mockito.when(teacherService.getTeacher(eq(teacherDTOToRemove.getId()))).thenReturn(teacherDTOToRemove);
-        Mockito.when(courseService.unassignTeacherFromCourse(eq(courseDTO), eq(teacherDTOToRemove)))
+        Mockito.when(courseService.unassignTeacherFromCourse(eq(courseDTO.getId()), eq(teacherDTOToRemove.getId())))
                 .thenAnswer(invocationOnMock -> {
-                    CourseDTO courseToUpdate = invocationOnMock.getArgument(0);
-                    courseToUpdate.getTeachers().remove(teachers.get(0));
+                    CourseDTO courseToUpdate = courseService.getCourse(invocationOnMock.getArgument(0));
+                    courseToUpdate.getTeachers().remove(teacherDTOs.get(0));
                     return courseToUpdate;
                 });
 
@@ -205,7 +205,7 @@ public class CourseControllerTest {
         Assertions.assertThat(actualCourseDTO.getTeachers().get(0))
                 .as("Wrong teacher has been unassigned from the course by Course Controller using " +
                         "'unassignTeacher' method")
-                .isEqualTo(teachers.get(1));
+                .isEqualToComparingFieldByField(teachers.get(1));
     }
 
     @Test
@@ -214,9 +214,9 @@ public class CourseControllerTest {
         List<CourseDTO> courseDTOs = JsonParser.buildObjectFromJSON(CourseJsonData.COURSES_FOR_FIND_ALL_BY_TEACHERS_COUNT,
                 new TypeReference<>() {});
 
-        courseDTOs.get(0).getTeachers().addAll(Arrays.asList(new Teacher(), new Teacher(), new Teacher(), new Teacher()));
-        courseDTOs.get(1).getTeachers().addAll(Arrays.asList(new Teacher(), new Teacher(), new Teacher()));
-        courseDTOs.get(2).getTeachers().addAll(Arrays.asList(new Teacher(), new Teacher(), new Teacher(), new Teacher()));
+        courseDTOs.get(0).getTeachers().addAll(Arrays.asList(new TeacherDTO(), new TeacherDTO(), new TeacherDTO(), new TeacherDTO()));
+        courseDTOs.get(1).getTeachers().addAll(Arrays.asList(new TeacherDTO(), new TeacherDTO(), new TeacherDTO()));
+        courseDTOs.get(2).getTeachers().addAll(Arrays.asList(new TeacherDTO(), new TeacherDTO(), new TeacherDTO(), new TeacherDTO()));
 
         List<CourseDTO> expectedCourseDTOs = courseDTOs.stream().filter(course ->
                 course.getTeachers().size() == expectedNumberOfTeachers).collect(Collectors.toList());

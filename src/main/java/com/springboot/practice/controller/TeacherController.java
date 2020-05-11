@@ -1,9 +1,7 @@
 package com.springboot.practice.controller;
 
-import com.springboot.practice.dto.CourseDTO;
 import com.springboot.practice.dto.TeacherDTO;
 import com.springboot.practice.exceptions.teacher.IllegalTeacherSearchException;
-import com.springboot.practice.unit.service.CourseService;
 import com.springboot.practice.unit.service.TeacherService;
 import com.springboot.practice.unit.service.criteria.TeacherSortingCriteria;
 import org.springframework.http.HttpStatus;
@@ -15,17 +13,14 @@ import java.util.List;
 @RestController
 public class TeacherController {
     private final TeacherService teacherService;
-    private final CourseService courseService;
 
-    public TeacherController(TeacherService teacherService, CourseService courseService) {
+    public TeacherController(TeacherService teacherService) {
         this.teacherService = teacherService;
-        this.courseService = courseService;
     }
 
     @PostMapping("/teacher")
     public ResponseEntity<TeacherDTO> createTeacher(@RequestBody TeacherDTO teacherDTO) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(teacherService.createTeacher(teacherDTO.getFirstName(),
-                teacherDTO.getLastName(), teacherDTO.getAge()));
+        return ResponseEntity.status(HttpStatus.CREATED).body(teacherService.createTeacher(teacherDTO));
     }
 
     @GetMapping("/teacher/{id}")
@@ -66,8 +61,7 @@ public class TeacherController {
     @GetMapping(value = "/teachers/course/{id}")
     @ResponseStatus(HttpStatus.FOUND)
     public List<TeacherDTO> getAllTeachersAssignedToCourse(@PathVariable(name = "id") Integer id) {
-        CourseDTO course = courseService.getCourse(id);
-        return teacherService.getAllTeachersAssignedToCourse(course);
+        return teacherService.getAllTeachersAssignedToCourse(id);
     }
 
     @DeleteMapping("/teacher/{id}")

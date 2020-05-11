@@ -1,11 +1,12 @@
 package com.springboot.practice.unit.service.implementation;
 
-import com.springboot.practice.dto.CourseDTO;
 import com.springboot.practice.dto.TeacherDTO;
+import com.springboot.practice.exceptions.course.CourseNotFoundException;
 import com.springboot.practice.exceptions.teacher.IllegalTeacherSearchException;
 import com.springboot.practice.exceptions.teacher.TeacherNotFoundException;
 import com.springboot.practice.model.Course;
 import com.springboot.practice.model.Teacher;
+import com.springboot.practice.repository.CourseRepository;
 import com.springboot.practice.repository.TeacherRepository;
 import com.springboot.practice.unit.service.TeacherService;
 import com.springboot.practice.unit.service.criteria.TeacherSortingCriteria;
@@ -23,17 +24,21 @@ import java.util.List;
 public class TeacherServiceImpl implements TeacherService {
     private static Logger logger = LoggerFactory.getLogger(TeacherServiceImpl.class);
     private final TeacherRepository teacherRepository;
+    private final CourseRepository courseRepository;
     private final ModelMapper modelMapper;
 
-    public TeacherServiceImpl(TeacherRepository teacherRepository, ModelMapper modelMapper) {
+    public TeacherServiceImpl(TeacherRepository teacherRepository, CourseRepository courseRepository, ModelMapper modelMapper) {
         this.teacherRepository = teacherRepository;
+        this.courseRepository = courseRepository;
         this.modelMapper = modelMapper;
     }
 
     @Override
-    public TeacherDTO createTeacher(String firstName, String lastName, Integer age) {
-        logger.info(String.format("Create teacher with first name '%s', last name '%s', age '%s'", firstName, lastName,
-                age));
+    public TeacherDTO createTeacher(TeacherDTO teacherDTO) {
+        String firstName = teacherDTO.getFirstName();
+        String lastName = teacherDTO.getLastName();
+        int age = teacherDTO.getAge();
+        logger.info(String.format("Create teacher with first name '%s', last name '%s', age '%s'", firstName, lastName, age));
         return modelMapper.map(teacherRepository.save(new Teacher(firstName, lastName, age)), TeacherDTO.class);
     }
 
@@ -78,9 +83,9 @@ public class TeacherServiceImpl implements TeacherService {
     }
 
     @Override
-    public List<TeacherDTO> getAllTeachersAssignedToCourse(CourseDTO courseDTO) {
-        logger.info("Get all teachers assigned to course with id " + courseDTO.getId());
-        Course course = modelMapper.map(courseDTO, Course.class);
+    public List<TeacherDTO> getAllTeachersAssignedToCourse(Integer courseId) {
+        logger.info("Get all teachers assigned to course with id " + courseId);
+        Course course = courseRepository.findOneById(courseId).orElseThrow(CourseNotFoundException::new);
         Type listType = new TypeToken<List<TeacherDTO>>(){}.getType();
         return modelMapper.map(teacherRepository.findAllByCoursesContaining(course), listType);
     }

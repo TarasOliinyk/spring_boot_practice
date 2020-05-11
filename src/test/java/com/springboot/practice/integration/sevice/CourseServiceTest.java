@@ -2,10 +2,10 @@ package com.springboot.practice.integration.sevice;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.springboot.practice.dto.CourseDTO;
-import com.springboot.practice.dto.TeacherDTO;
 import com.springboot.practice.model.Course;
 import com.springboot.practice.model.Teacher;
 import com.springboot.practice.repository.CourseRepository;
+import com.springboot.practice.repository.TeacherRepository;
 import com.springboot.practice.unit.service.CourseService;
 import com.springboot.practice.unit.service.criteria.CourseCriteria;
 import com.springboot.practice.utils.json.JsonParser;
@@ -38,6 +38,8 @@ public class CourseServiceTest {
     private JdbcTemplate jdbcTemplate;
     @MockBean // ToDo: Mocked for testing as a POC
     private CourseRepository courseRepository;
+    @MockBean // ToDo: Mocked for testing as a POC
+    private TeacherRepository teacherRepository;
 
     @Test
     public void createCourse_CreateNewCourse_ReturnCreatedCourse() {
@@ -95,12 +97,11 @@ public class CourseServiceTest {
                 new TypeReference<>() {});
         Teacher teacher = JsonParser.buildObjectFromJSON(CourseJsonData.TEACHER_FOR_FIND_ALL_BY_TEACHERS_CONTAINING,
                 new TypeReference<>() {});
-        TeacherDTO teacherDTO = JsonParser.buildObjectFromJSON(CourseJsonData.TEACHER_FOR_FIND_ALL_BY_TEACHERS_CONTAINING,
-                new TypeReference<>() {});
 
+        Mockito.when(teacherRepository.findOneById(eq(teacher.getId()))).thenReturn(Optional.of(teacher));
         Mockito.when(courseRepository.findAllByTeachersContaining(eq(teacher))).thenReturn(expectedCourses);
 
-        List<CourseDTO> actualCourseDTOs = courseService.getAllCoursesAssignedToTeacher(teacherDTO);
+        List<CourseDTO> actualCourseDTOs = courseService.getAllCoursesAssignedToTeacher(teacher.getId());
 
         Assertions.assertThat(actualCourseDTOs)
                 .usingFieldByFieldElementComparator()

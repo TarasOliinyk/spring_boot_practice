@@ -1,6 +1,5 @@
 package com.springboot.practice.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.annotation.*;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
@@ -8,7 +7,6 @@ import com.springboot.practice.utils.LocalDatePersistenceConverter;
 import lombok.*;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotEmpty;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -24,7 +22,6 @@ public class Course {
     private Integer id;
 
     @Column
-    @NotEmpty(message = "Course cannot be registered without a name")
     private String name;
 
     @Column
@@ -40,11 +37,9 @@ public class Course {
     @JsonSerialize(using = LocalDateSerializer.class)
     private LocalDate endDate;
 
-    @JsonIgnore
     @ManyToMany
     private List<Teacher> teachers = new ArrayList<>();
 
-    @JsonIgnore
     @ManyToMany
     private List<Student> students = new ArrayList<>();
 

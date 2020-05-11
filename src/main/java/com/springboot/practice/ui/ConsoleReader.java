@@ -33,11 +33,11 @@ public class ConsoleReader implements CommandLineRunner {
 //        Course physics = courseService.createCourse("Physics");
 //        Teacher teacher = teacherService.createTeacher("Bob", "White", 37);
 
-        CourseDTO math = courseService.getCourse(1);
-        CourseDTO physics = courseService.getCourse(2);
-        TeacherDTO teacherMike = teacherService.getTeacher(1);
-        TeacherDTO teacherTom = teacherService.getTeacher(2);
-        TeacherDTO teacherBob = teacherService.getTeacher(3);
+//        CourseDTO math = courseService.getCourse(1);
+//        CourseDTO physics = courseService.getCourse(2);
+//        TeacherDTO teacherMike = teacherService.getTeacher(1);
+//        TeacherDTO teacherTom = teacherService.getTeacher(2);
+//        TeacherDTO teacherBob = teacherService.getTeacher(3);
 
 //        courseService.assignTeacherToCourse(physics, teacherBob);
 //        courseService.assignTeacherToCourse(math, teacherMike);
@@ -57,10 +57,10 @@ public class ConsoleReader implements CommandLineRunner {
         System.out.println("TEACHERS:");
         teacherService.getAllTeachers().forEach(t -> System.out.println(t.toString()));
         System.out.println("COURSES ASSIGNED TO Mike:");
-        List<CourseDTO> coursesAssignedToMike = courseService.getAllCoursesAssignedToTeacher(teacherMike);
+        List<CourseDTO> coursesAssignedToMike = courseService.getAllCoursesAssignedToTeacher(1);
         coursesAssignedToMike.forEach(mc -> System.out.println(mc.toString()));
         System.out.println("COURSES ASSIGNED TO Tom:");
-        List<CourseDTO> coursesAssignedToTom = courseService.getAllCoursesAssignedToTeacher(teacherTom);
+        List<CourseDTO> coursesAssignedToTom = courseService.getAllCoursesAssignedToTeacher(2);
         coursesAssignedToTom.forEach(mc -> System.out.println(mc.toString()));
         System.out.println("COURSES THAT HAVE SPECIFIC NUMBER OF ASSIGNED TEACHERS:");
         List<CourseDTO> courses = courseService.getCoursesWithNumberOfAssignedTeachers(3);
