@@ -1,12 +1,12 @@
-package com.springboot.practice.exceptions.teacher;
+package com.springboot.practice.exceptions.user;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
 @ResponseStatus(HttpStatus.NOT_FOUND)
-public class StudentNotFoundException extends RuntimeException {
+public class UserNotFoundException extends RuntimeException {
 
-    public StudentNotFoundException(String message) {
+    public UserNotFoundException(String message) {
         super(message);
     }
 }

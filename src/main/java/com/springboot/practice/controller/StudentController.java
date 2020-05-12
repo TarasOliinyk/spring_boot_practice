@@ -14,28 +14,28 @@ public class StudentController {
         this.studentService = studentService;
     }
 
-    @PostMapping("/student")
+    @PostMapping(path = "/student")
     public ResponseEntity<StudentDTO> createStudent(@RequestBody StudentDTO studentDTO) {
         return ResponseEntity.status(HttpStatus.CREATED).body(studentService.createStudent(studentDTO));
     }
 
-    @GetMapping("/student/{id}")
+    @GetMapping(path = "/student/{id}")
     public ResponseEntity<StudentDTO> getStudent(@PathVariable(name = "id") Integer id) {
         return ResponseEntity.status(HttpStatus.FOUND).body(studentService.getStudent(id));
     }
 
-    @PutMapping(value = "/student")
+    @PutMapping(path = "/student")
     public ResponseEntity<StudentDTO> updateStudent(@RequestBody StudentDTO studentDTO) {
         return ResponseEntity.status(HttpStatus.OK).body(studentService.updateStudent(studentDTO));
     }
 
-    @GetMapping("/student/{studentId}/courses_count")
+    @GetMapping(path = "/student/{studentId}/courses_count")
     public ResponseEntity<Integer> getNumberOfCoursesAssignedToStudent(@PathVariable(name = "studentId") Integer studentId) {
         return ResponseEntity.status(HttpStatus.OK).body(studentService.getNumberOfCoursesAssignedToStudent(studentId));
     }
 
-    @DeleteMapping("/student/{id}")
-    @ResponseStatus(value = HttpStatus.ACCEPTED)
+    @DeleteMapping(path = "/student/{id}")
+    @ResponseStatus(HttpStatus.ACCEPTED)
     public void deleteStudent(@PathVariable(name = "id") Integer id) {
         studentService.deleteStudent(id);
     }

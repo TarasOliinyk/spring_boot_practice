@@ -4,7 +4,7 @@ import com.springboot.practice.dto.CourseDTO;
 import com.springboot.practice.exceptions.course.CourseNotFoundException;
 import com.springboot.practice.exceptions.course.IllegalCourseArgumentException;
 import com.springboot.practice.exceptions.course.IllegalCourseSearchException;
-import com.springboot.practice.exceptions.teacher.StudentNotFoundException;
+import com.springboot.practice.exceptions.student.StudentNotFoundException;
 import com.springboot.practice.exceptions.teacher.TeacherNotFoundException;
 import com.springboot.practice.model.Course;
 import com.springboot.practice.model.Student;
