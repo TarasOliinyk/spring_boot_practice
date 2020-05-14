@@ -3,6 +3,7 @@ package com.springboot.practice.dto;
 import lombok.*;
 
 @Data
+@NoArgsConstructor
 @EqualsAndHashCode(exclude = "password")
 @ToString(exclude = "password")
 public class UserDTO {

@@ -21,16 +21,17 @@ import static com.auth0.jwt.algorithms.Algorithm.HMAC512;
 import static com.springboot.practice.config.security.SecurityConstants.*;
 
 public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
-    private final UserService userService;
     private final AuthenticationManager authenticationManager;
+    private final UserService userService;
 
-    public JWTAuthenticationFilter(UserService userService, AuthenticationManager authenticationManager) {
-        this.userService = userService;
+    public JWTAuthenticationFilter(AuthenticationManager authenticationManager, UserService userService) {
         this.authenticationManager = authenticationManager;
+        this.userService = userService;
     }
 
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) {
+
         try {
             UserDTO userDTO = new ObjectMapper().readValue(request.getInputStream(), UserDTO.class);
             return authenticationManager.authenticate(
@@ -46,9 +47,10 @@ public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilte
     }
 
     @Override
-    protected void successfulAuthentication(HttpServletRequest req, HttpServletResponse res, FilterChain chain, Authentication auth) {
-        User user = (User) auth.getPrincipal();
-        UserDTO userDto = userService.getUserByUsername(user.getUsername());
+    protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain,
+                                            Authentication auth) {
+        var user = (User) auth.getPrincipal();
+        var userDto = userService.getUserByUsername(user.getUsername());
         userDto.setPassword(null);
 
         String token = JWT.create()
@@ -57,7 +59,7 @@ public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilte
                 .withExpiresAt(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
                 .sign(HMAC512(SECRET.getBytes()));
 
-        res.addHeader(HEADER, TOKEN_PREFIX + token);
-        res.setContentType("application/json");
+        response.addHeader(HEADER, TOKEN_PREFIX + token);
+        response.setContentType("application/json");
     }
 }
