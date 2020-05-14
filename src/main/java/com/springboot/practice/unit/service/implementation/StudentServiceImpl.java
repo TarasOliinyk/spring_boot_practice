@@ -1,7 +1,7 @@
 package com.springboot.practice.unit.service.implementation;
 
 import com.springboot.practice.dto.StudentDTO;
-import com.springboot.practice.exceptions.teacher.StudentNotFoundException;
+import com.springboot.practice.exceptions.student.StudentNotFoundException;
 import com.springboot.practice.model.Student;
 import com.springboot.practice.repository.StudentRepository;
 import com.springboot.practice.unit.service.StudentService;

@@ -18,28 +18,28 @@ public class TeacherController {
         this.teacherService = teacherService;
     }
 
-    @PostMapping("/teacher")
+    @PostMapping(path = "/teacher")
     public ResponseEntity<TeacherDTO> createTeacher(@RequestBody TeacherDTO teacherDTO) {
         return ResponseEntity.status(HttpStatus.CREATED).body(teacherService.createTeacher(teacherDTO));
     }
 
-    @GetMapping("/teacher/{id}")
+    @GetMapping(path = "/teacher/{id}")
     public ResponseEntity<TeacherDTO> getTeacher(@PathVariable(name = "id") Integer id) {
         return ResponseEntity.status(HttpStatus.FOUND).body(teacherService.getTeacher(id));
     }
 
-    @GetMapping("/teacher/phone_number/{phoneNumber}")
+    @GetMapping(path = "/teacher/phone_number/{phoneNumber}")
     public ResponseEntity<TeacherDTO> getTeacherByPhoneNumber(@PathVariable(name = "phoneNumber") String phoneNumber) {
         return ResponseEntity.status(HttpStatus.OK).body(teacherService.getTeacherByPhoneNumber(phoneNumber));
     }
 
-    @GetMapping("/teacher/list")
-    @ResponseStatus(value = HttpStatus.FOUND)
+    @GetMapping(path = "/teacher/list")
+    @ResponseStatus(HttpStatus.FOUND)
     public List<TeacherDTO> getAllTeachers() {
         return teacherService.getAllTeachers();
     }
 
-    @GetMapping("/teachers/sorted_by_age/{sortingOrder}")
+    @GetMapping(path = "/teachers/sorted_by_age/{sortingOrder}")
     @ResponseStatus(HttpStatus.OK)
     public List<TeacherDTO> getAllTeachersSortedByAge(@PathVariable(value = "sortingOrder") String sortingOrder) {
         TeacherSortingCriteria sortingCriteria;
@@ -58,14 +58,14 @@ public class TeacherController {
         return teacherService.getAllTeachersSortedBy(sortingCriteria);
     }
 
-    @GetMapping(value = "/teachers/course/{id}")
+    @GetMapping(path = "/teachers/course/{id}")
     @ResponseStatus(HttpStatus.FOUND)
     public List<TeacherDTO> getAllTeachersAssignedToCourse(@PathVariable(name = "id") Integer id) {
         return teacherService.getAllTeachersAssignedToCourse(id);
     }
 
-    @DeleteMapping("/teacher/{id}")
-    @ResponseStatus(value = HttpStatus.ACCEPTED)
+    @DeleteMapping(path = "/teacher/{id}")
+    @ResponseStatus(HttpStatus.ACCEPTED)
     public void deleteTeacher(@PathVariable(name = "id") Integer id) {
         teacherService.deleteTeacher(id);
     }

@@ -18,78 +18,78 @@ public class CourseController {
         this.courseService = courseService;
     }
 
-    @PostMapping("/course")
+    @PostMapping(path = "/course")
     public ResponseEntity<CourseDTO> createCourse(@RequestBody CourseDTO courseDTO) {
         return ResponseEntity.status(HttpStatus.CREATED).body(courseService.createCourse(courseDTO.getName()));
     }
 
-    @PostMapping("/course_with_dates")
+    @PostMapping(path = "/course_with_dates")
     public ResponseEntity<CourseDTO> createCourseWithStartAndEndDates(@RequestBody CourseDTO courseDTO) {
         return ResponseEntity.status(HttpStatus.CREATED).body(courseService.createCourseWithStartAndEndDates(
                 courseDTO.getName(), courseDTO.getStartDate(), courseDTO.getEndDate()));
     }
 
-    @GetMapping(value = "/course/{id}")
+    @GetMapping(path = "/course/{id}")
     public ResponseEntity<CourseDTO> getCourse(@PathVariable(name = "id") Integer id) {
         return ResponseEntity.status(HttpStatus.FOUND).body(courseService.getCourse(id));
     }
 
-    @GetMapping(value = "/course/list")
+    @GetMapping(path = "/course/list")
     @ResponseStatus(value = HttpStatus.FOUND)
     public List<CourseDTO> getAllCourses() {
         return courseService.getAllCourses();
     }
 
-    @GetMapping("/courses/teacher/{teacherId}")
+    @GetMapping(path = "/courses/teacher/{teacherId}")
     @ResponseStatus(HttpStatus.FOUND)
     public List<CourseDTO> getAllCoursesAssignedToTeacher(@PathVariable(name = "teacherId") Integer teacherId) {
         return courseService.getAllCoursesAssignedToTeacher(teacherId);
     }
 
-    @GetMapping("/courses/student/{studentId}")
+    @GetMapping(path = "/courses/student/{studentId}")
     @ResponseStatus(HttpStatus.FOUND)
     public List<CourseDTO> getAllCoursesAssignedToStudent(@PathVariable(name = "studentId") Integer studentId) {
         return courseService.getAllCoursesAssignedToStudent(studentId);
     }
 
-    @GetMapping("/courses/teacher/{teacherId}/student/{studentId}")
+    @GetMapping(path = "/courses/teacher/{teacherId}/student/{studentId}")
     @ResponseStatus(HttpStatus.OK)
     public List<CourseDTO> getAllCoursesWithAssignedTeacherAndStudent(@PathVariable(name = "teacherId") Integer teacherId,
                                                                       @PathVariable(name = "studentId") Integer studentId) {
         return courseService.getAllCoursesWithAssignedTeacherAndStudent(teacherId, studentId);
     }
 
-    @PutMapping(value = "/course/{courseId}/add_teacher/{teacherId}")
+    @PutMapping(path = "/course/{courseId}/add_teacher/{teacherId}")
     public ResponseEntity<CourseDTO> assignTeacher(@PathVariable(value = "courseId") Integer courseId,
                                                    @PathVariable(value = "teacherId") Integer teacherId) {
         return ResponseEntity.status(HttpStatus.OK).body(courseService.assignTeacherToCourse(courseId, teacherId));
     }
 
-    @PutMapping("/course/{courseId}/add_student/{studentId}")
+    @PutMapping(path = "/course/{courseId}/add_student/{studentId}")
     public ResponseEntity<CourseDTO> assignStudent(@PathVariable(value = "courseId") Integer courseId,
                                                    @PathVariable(value = "studentId") Integer studentId) {
         return ResponseEntity.status(HttpStatus.OK).body(courseService.assignStudentToCourse(courseId, studentId));
     }
 
-    @PutMapping("/course/{courseId}/remove_teacher/{teacherId}")
+    @PutMapping(path = "/course/{courseId}/remove_teacher/{teacherId}")
     public ResponseEntity<CourseDTO> unassignTeacher(@PathVariable(value = "courseId") Integer courseId,
                                                      @PathVariable(value = "teacherId") Integer teacherId) {
         return ResponseEntity.status(HttpStatus.OK).body(courseService.unassignTeacherFromCourse(courseId, teacherId));
     }
 
-    @PutMapping("/course/{courseId}/remove_student/{studentId}")
+    @PutMapping(path = "/course/{courseId}/remove_student/{studentId}")
     public ResponseEntity<CourseDTO> unassignStudent(@PathVariable(value = "courseId") Integer courseId,
                                                      @PathVariable(value = "studentId") Integer studentId) {
         return ResponseEntity.status(HttpStatus.OK).body(courseService.unassignStudentFromCourse(courseId, studentId));
     }
 
-    @GetMapping("/course/teachers/{numberOfTeachers}")
+    @GetMapping(path = "/course/teachers/{numberOfTeachers}")
     @ResponseStatus(HttpStatus.FOUND)
     public List<CourseDTO> getCoursesWithNumberOfAssignedTeachers(@PathVariable(value = "numberOfTeachers") int numberOfTeachers) {
         return courseService.getCoursesWithNumberOfAssignedTeachers(numberOfTeachers);
     }
 
-    @GetMapping("/courses/filter/{sortingCriteria}")
+    @GetMapping(path = "/courses/filter/{sortingCriteria}")
     @ResponseStatus(HttpStatus.OK)
     public List<CourseDTO> getFilteredCourses(@PathVariable(value = "sortingCriteria") String sortingCriteria) {
         CourseCriteria courseCriteria;
@@ -115,14 +115,14 @@ public class CourseController {
         return courseService.getFilteredCourses(courseCriteria);
     }
 
-    @GetMapping("/courses/duration/{numberOfDays}")
+    @GetMapping(path = "/courses/duration/{numberOfDays}")
     @ResponseStatus(HttpStatus.FOUND)
     public List<CourseDTO> getCoursesThatLastSpecificNumberOfDays(@PathVariable(value = "numberOfDays") int numberOfDays) {
         return courseService.getCoursesThatLast(numberOfDays);
     }
 
-    @DeleteMapping(value = "/course/{id}")
-    @ResponseStatus(value = HttpStatus.ACCEPTED)
+    @DeleteMapping(path = "/course/{id}")
+    @ResponseStatus(HttpStatus.ACCEPTED)
     public void deleteCourse(@PathVariable(value = "id") Integer id) {
         courseService.deleteCourse(id);
     }
