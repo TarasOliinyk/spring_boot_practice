@@ -8,10 +8,12 @@ import com.springboot.practice.unit.service.TeacherService;
 import com.springboot.practice.unit.service.criteria.TeacherSortingCriteria;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.security.RolesAllowed;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 public class TeacherController {
@@ -27,7 +29,7 @@ public class TeacherController {
         return ResponseEntity.status(HttpStatus.CREATED).body(teacherService.createTeacher(teacherDTO));
     }
 
-    @RolesAllowed({Role.Name.STUDENT, Role.Name.TEACHER})
+    @RolesAllowed({Role.Name.STUDENT, Role.Name.TEACHER, Role.Name.ADMIN})
     @GetMapping(path = "/teacher/{id}")
     public ResponseEntity<TeacherDTO> getTeacher(@PathVariable(name = "id") Integer id) {
         return ResponseEntity.status(HttpStatus.FOUND).body(teacherService.getTeacher(id));
@@ -39,11 +41,28 @@ public class TeacherController {
         return ResponseEntity.status(HttpStatus.OK).body(teacherService.getTeacherByPhoneNumber(phoneNumber));
     }
 
-    @RolesAllowed({Role.Name.USER, Role.Name.STUDENT, Role.Name.TEACHER}) // ToDo: Need to implement fields filtering for USER role
+    @RolesAllowed({Role.Name.USER, Role.Name.STUDENT, Role.Name.TEACHER, Role.Name.ADMIN})
     @GetMapping(path = "/teacher/list")
     @ResponseStatus(HttpStatus.FOUND)
     public List<TeacherDTO> getAllTeachers() {
-        return teacherService.getAllTeachers();
+        String userRole = SecurityContextHolder
+                .getContext()
+                .getAuthentication()
+                .getAuthorities()
+                .iterator().next().getAuthority();
+
+        List<TeacherDTO> teachers = teacherService.getAllTeachers();
+
+        if (userRole.equals(Role.Name.USER)) {
+            return teachers.stream().map(teacherDTO -> {
+                TeacherDTO teacherForUserRole = new TeacherDTO();
+                teacherForUserRole.setFirstName(teacherDTO.getFirstName());
+                teacherForUserRole.setLastName(teacherDTO.getLastName());
+                return teacherForUserRole;
+            }).collect(Collectors.toList());
+        } else {
+            return teachers;
+        }
     }
 
     @IsAdmin

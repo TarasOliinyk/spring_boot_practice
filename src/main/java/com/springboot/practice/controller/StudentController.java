@@ -24,7 +24,7 @@ public class StudentController {
         return ResponseEntity.status(HttpStatus.CREATED).body(studentService.createStudent(studentDTO));
     }
 
-    @RolesAllowed({Role.Name.STUDENT, Role.Name.TEACHER})
+    @RolesAllowed({Role.Name.STUDENT, Role.Name.TEACHER, Role.Name.ADMIN})
     @GetMapping(path = "/student/{id}")
     public ResponseEntity<StudentDTO> getStudent(@PathVariable(name = "id") Integer id) {
         return ResponseEntity.status(HttpStatus.FOUND).body(studentService.getStudent(id));
@@ -36,7 +36,7 @@ public class StudentController {
         return ResponseEntity.status(HttpStatus.OK).body(studentService.updateStudent(studentDTO));
     }
 
-    @RolesAllowed({Role.Name.STUDENT, Role.Name.TEACHER})
+    @RolesAllowed({Role.Name.STUDENT, Role.Name.TEACHER, Role.Name.ADMIN})
     @GetMapping(path = "/student/{studentId}/courses_count")
     public ResponseEntity<Integer> getNumberOfCoursesAssignedToStudent(@PathVariable(name = "studentId") Integer studentId) {
         return ResponseEntity.status(HttpStatus.OK).body(studentService.getNumberOfCoursesAssignedToStudent(studentId));

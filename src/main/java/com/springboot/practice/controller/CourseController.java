@@ -34,13 +34,13 @@ public class CourseController {
                 courseDTO.getName(), courseDTO.getStartDate(), courseDTO.getEndDate()));
     }
 
-    @RolesAllowed({Role.Name.USER, Role.Name.STUDENT, Role.Name.TEACHER})
+    @RolesAllowed({Role.Name.USER, Role.Name.STUDENT, Role.Name.TEACHER, Role.Name.ADMIN})
     @GetMapping(path = "/course/{id}")
     public ResponseEntity<CourseDTO> getCourse(@PathVariable(name = "id") Integer id) {
         return ResponseEntity.status(HttpStatus.FOUND).body(courseService.getCourse(id));
     }
 
-    @RolesAllowed({Role.Name.USER, Role.Name.STUDENT, Role.Name.TEACHER})
+    @RolesAllowed({Role.Name.USER, Role.Name.STUDENT, Role.Name.TEACHER, Role.Name.ADMIN})
     @GetMapping(path = "/course/list")
     @ResponseStatus(value = HttpStatus.FOUND)
     public List<CourseDTO> getAllCourses() {
@@ -104,7 +104,7 @@ public class CourseController {
         return courseService.getCoursesWithNumberOfAssignedTeachers(numberOfTeachers);
     }
 
-    @RolesAllowed({Role.Name.USER, Role.Name.STUDENT, Role.Name.TEACHER})
+    @RolesAllowed({Role.Name.USER, Role.Name.STUDENT, Role.Name.TEACHER, Role.Name.ADMIN})
     @GetMapping(path = "/courses/filter/{sortingCriteria}")
     @ResponseStatus(HttpStatus.OK)
     public List<CourseDTO> getFilteredCourses(@PathVariable(value = "sortingCriteria") String sortingCriteria) {
@@ -131,7 +131,7 @@ public class CourseController {
         return courseService.getFilteredCourses(courseCriteria);
     }
 
-    @RolesAllowed({Role.Name.USER, Role.Name.STUDENT, Role.Name.TEACHER})
+    @RolesAllowed({Role.Name.USER, Role.Name.STUDENT, Role.Name.TEACHER, Role.Name.ADMIN})
     @GetMapping(path = "/courses/duration/{numberOfDays}")
     @ResponseStatus(HttpStatus.FOUND)
     public List<CourseDTO> getCoursesThatLastSpecificNumberOfDays(@PathVariable(value = "numberOfDays") int numberOfDays) {

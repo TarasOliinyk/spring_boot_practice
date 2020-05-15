@@ -1,5 +1,6 @@
 package com.springboot.practice.model;
 
+import com.springboot.practice.data.Role;
 import lombok.*;
 
 import javax.persistence.*;
@@ -20,4 +21,8 @@ public class User {
 
     @Column(nullable = false)
     public String password;
+
+    @Column(nullable = false)
+//    @Enumerated(EnumType.STRING)
+    public String role = Role.Name.USER; // ToDo: Needs to be reworked to use enum
 }
