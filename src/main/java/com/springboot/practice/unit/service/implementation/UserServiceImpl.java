@@ -25,17 +25,17 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserDTO getUserByUsername(String username) {
-        logger.info("Get user with username " + username);
-        return modelMapper.map(userRepository.findByUsername(username).orElseThrow(
-                () -> new UserNotFoundException("There is no user with username " + username)), UserDTO.class);
-    }
-
-    @Override
     public UserDTO createUser(UserDTO userDTO) {
         logger.info("Create user with username " + userDTO.getUsername());
         User user = modelMapper.map(userDTO, User.class);
         user.setPassword(bCryptPasswordEncoder.encode(userDTO.getPassword()));
         return modelMapper.map(userRepository.save(user), UserDTO.class);
+    }
+
+    @Override
+    public UserDTO getUserByUsername(String username) {
+        logger.info("Get user with username " + username);
+        return modelMapper.map(userRepository.findByUsername(username).orElseThrow(
+                () -> new UserNotFoundException("There is no user with username " + username)), UserDTO.class);
     }
 }

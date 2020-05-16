@@ -38,8 +38,10 @@ public class TeacherServiceImpl implements TeacherService {
         String firstName = teacherDTO.getFirstName();
         String lastName = teacherDTO.getLastName();
         int age = teacherDTO.getAge();
-        logger.info(String.format("Create teacher with first name '%s', last name '%s', age '%s'", firstName, lastName, age));
-        return modelMapper.map(teacherRepository.save(new Teacher(firstName, lastName, age)), TeacherDTO.class);
+        String phoneNumber = teacherDTO.getPhoneNumber();
+        logger.info(String.format("Create teacher with first name '%s', last name '%s', age '%s', phone number '%s'",
+                firstName, lastName, age, phoneNumber));
+        return modelMapper.map(teacherRepository.save(new Teacher(firstName, lastName, age, phoneNumber)), TeacherDTO.class);
     }
 
     @Override
