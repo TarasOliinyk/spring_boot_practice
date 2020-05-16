@@ -23,6 +23,6 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         UserDTO userDTO = userService.getUserByUsername(username);
         return new User(userDTO.getUsername(), userDTO.getPassword(),
-                Collections.singletonList(new SimpleGrantedAuthority(userDTO.getRole())));
+                Collections.singletonList(new SimpleGrantedAuthority(userDTO.getRole().name())));
     }
 }

@@ -38,7 +38,7 @@ public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilte
             return authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
                     userDTO.getUsername(),
                     userDTO.getPassword(),
-                    Collections.singletonList(new SimpleGrantedAuthority(userDTO.getRole()))));
+                    Collections.singletonList(new SimpleGrantedAuthority(userDTO.getRole().name()))));
         } catch (Exception e) {
 
             if (e instanceof BadCredentialsException) {
@@ -59,7 +59,7 @@ public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         String token = JWT.create()
                 .withSubject(user.getUsername())
                 .withClaim(USER_ID_PARAM, userDto.getId())
-                .withClaim(USER_ROLE_PARAM, userDto.getRole())
+                .withClaim(USER_ROLE_PARAM, userDto.getRole().name())
                 .withExpiresAt(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
                 .sign(HMAC512(SECRET.getBytes()));
 

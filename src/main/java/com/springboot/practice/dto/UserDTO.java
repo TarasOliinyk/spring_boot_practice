@@ -15,5 +15,5 @@ public class UserDTO {
 
     public String password;
 
-    public String role = Role.Name.USER; // ToDo: Needs to be reworked to use enum
+    public Role role = Role.ROLE_USER;
 }

@@ -23,6 +23,6 @@ public class User {
     public String password;
 
     @Column(nullable = false)
-//    @Enumerated(EnumType.STRING)
-    public String role = Role.Name.USER; // ToDo: Needs to be reworked to use enum
+    @Enumerated(EnumType.STRING)
+    public Role role = Role.ROLE_USER;
 }

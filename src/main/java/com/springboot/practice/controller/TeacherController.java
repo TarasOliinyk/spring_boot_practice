@@ -45,15 +45,14 @@ public class TeacherController {
     @GetMapping(path = "/teacher/list")
     @ResponseStatus(HttpStatus.FOUND)
     public List<TeacherDTO> getAllTeachers() {
-        String userRole = SecurityContextHolder
-                .getContext()
+        Role userRole = Role.valueOf(SecurityContextHolder.getContext()
                 .getAuthentication()
                 .getAuthorities()
-                .iterator().next().getAuthority();
+                .iterator().next().getAuthority());
 
         List<TeacherDTO> teachers = teacherService.getAllTeachers();
 
-        if (userRole.equals(Role.Name.USER)) {
+        if (userRole.equals(Role.ROLE_USER)) {
             return teachers.stream().map(teacherDTO -> {
                 TeacherDTO teacherForUserRole = new TeacherDTO();
                 teacherForUserRole.setFirstName(teacherDTO.getFirstName());
