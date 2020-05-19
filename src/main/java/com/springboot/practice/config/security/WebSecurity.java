@@ -1,6 +1,7 @@
 package com.springboot.practice.config.security;
 
-import com.springboot.practice.unit.service.UserService;
+import com.springboot.practice.repository.UserRepository;
+import com.springboot.practice.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.http.HttpMethod;
@@ -34,6 +35,9 @@ public class WebSecurity extends WebSecurityConfigurerAdapter {
     private UserService userService;
 
     @Autowired
+    private UserRepository userRepository;
+
+    @Autowired
     private BCryptPasswordEncoder bCryptPasswordEncoder;
 
     @Override
@@ -48,7 +52,7 @@ public class WebSecurity extends WebSecurityConfigurerAdapter {
                     response.getWriter().write(e.getMessage());
                 })
                 .and()
-                .addFilter(new JWTAuthenticationFilter(authenticationManager(), userService))
+                .addFilter(new JWTAuthenticationFilter(authenticationManager(), userService, userRepository))
                 .addFilter(new JWTAuthorizationFilter(authenticationManager()))
                 // this disables session creation on Spring Security
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);

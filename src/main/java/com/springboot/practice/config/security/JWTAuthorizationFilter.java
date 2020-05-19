@@ -14,7 +14,8 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import static com.springboot.practice.config.security.SecurityConstants.*;
 
@@ -25,7 +26,8 @@ public class JWTAuthorizationFilter extends BasicAuthenticationFilter {
     }
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws IOException, ServletException {
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
+            throws IOException, ServletException {
         String header = request.getHeader(HEADER);
 
         if (null == header || !header.startsWith(TOKEN_PREFIX)) {
@@ -41,16 +43,16 @@ public class JWTAuthorizationFilter extends BasicAuthenticationFilter {
         String header = request.getHeader(HEADER);
 
         if (null != header) {
-            // parse the token.
+            // parse the token
             DecodedJWT decodedJWT = JWT.require(Algorithm.HMAC512(SECRET.getBytes())).build()
                     .verify(header.replace(TOKEN_PREFIX, ""));
             String username = decodedJWT.getSubject();
             Integer userId = decodedJWT.getClaim(USER_ID_PARAM).asInt();
-            String userRole = decodedJWT.getClaim(USER_ROLE_PARAM).asString();
+            List<SimpleGrantedAuthority> userRoles = decodedJWT.getClaim(USER_ROLE_PARAM).asList(String.class).stream()
+                    .map(SimpleGrantedAuthority::new).collect(Collectors.toList());
 
             if (null != username) {
-                return new UsernamePasswordAuthenticationToken(username, userId,
-                        Collections.singletonList(new SimpleGrantedAuthority(userRole)));
+                return new UsernamePasswordAuthenticationToken(username, userId, userRoles);
             }
             return null;
         }

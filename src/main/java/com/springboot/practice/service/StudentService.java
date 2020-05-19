@@ -1,4 +1,4 @@
-package com.springboot.practice.unit.service;
+package com.springboot.practice.service;
 
 import com.springboot.practice.dto.StudentDTO;
 

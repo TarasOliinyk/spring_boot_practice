@@ -1,4 +1,4 @@
-package com.springboot.practice.unit.service.criteria;
+package com.springboot.practice.service.criteria;
 
 public enum TeacherSortingCriteria {
     ASCENDING_BY_AGE,

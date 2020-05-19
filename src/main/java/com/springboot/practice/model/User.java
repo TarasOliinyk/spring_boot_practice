@@ -1,9 +1,15 @@
 package com.springboot.practice.model;
 
-import com.springboot.practice.data.Role;
-import lombok.*;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Data
@@ -22,7 +28,7 @@ public class User {
     @Column(nullable = false)
     public String password;
 
-    @Column(nullable = false)
-    @Enumerated(EnumType.STRING)
-    public Role role = Role.ROLE_USER;
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "userId")
+    @Fetch(FetchMode.SELECT)
+    public List<Role> roles = new ArrayList<>();
 }

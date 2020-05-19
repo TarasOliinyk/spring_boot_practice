@@ -1,7 +1,9 @@
 package com.springboot.practice.dto;
 
-import com.springboot.practice.data.Role;
 import lombok.*;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Data
 @NoArgsConstructor
@@ -15,5 +17,5 @@ public class UserDTO {
 
     public String password;
 
-    public Role role = Role.ROLE_USER;
+    public List<RoleDTO> roles = new ArrayList<>();
 }

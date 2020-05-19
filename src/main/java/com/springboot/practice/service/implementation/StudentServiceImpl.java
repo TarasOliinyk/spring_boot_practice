@@ -1,10 +1,10 @@
-package com.springboot.practice.unit.service.implementation;
+package com.springboot.practice.service.implementation;
 
 import com.springboot.practice.dto.StudentDTO;
 import com.springboot.practice.exceptions.student.StudentNotFoundException;
 import com.springboot.practice.model.Student;
 import com.springboot.practice.repository.StudentRepository;
-import com.springboot.practice.unit.service.StudentService;
+import com.springboot.practice.service.StudentService;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

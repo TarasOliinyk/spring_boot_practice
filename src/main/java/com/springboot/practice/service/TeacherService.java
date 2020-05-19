@@ -1,7 +1,7 @@
-package com.springboot.practice.unit.service;
+package com.springboot.practice.service;
 
 import com.springboot.practice.dto.TeacherDTO;
-import com.springboot.practice.unit.service.criteria.TeacherSortingCriteria;
+import com.springboot.practice.service.criteria.TeacherSortingCriteria;
 
 import java.util.List;
 

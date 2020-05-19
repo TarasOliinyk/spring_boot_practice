@@ -2,10 +2,10 @@ package com.springboot.practice.ui;
 
 import com.springboot.practice.dto.CourseDTO;
 import com.springboot.practice.dto.TeacherDTO;
-import com.springboot.practice.unit.service.CourseService;
-import com.springboot.practice.unit.service.TeacherService;
-import com.springboot.practice.unit.service.criteria.CourseCriteria;
-import com.springboot.practice.unit.service.criteria.TeacherSortingCriteria;
+import com.springboot.practice.service.CourseService;
+import com.springboot.practice.service.TeacherService;
+import com.springboot.practice.service.criteria.CourseCriteria;
+import com.springboot.practice.service.criteria.TeacherSortingCriteria;
 import org.springframework.boot.CommandLineRunner;
 
 import java.util.List;

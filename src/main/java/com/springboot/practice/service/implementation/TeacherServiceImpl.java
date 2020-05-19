@@ -1,4 +1,4 @@
-package com.springboot.practice.unit.service.implementation;
+package com.springboot.practice.service.implementation;
 
 import com.springboot.practice.dto.TeacherDTO;
 import com.springboot.practice.exceptions.course.CourseNotFoundException;
@@ -8,8 +8,8 @@ import com.springboot.practice.model.Course;
 import com.springboot.practice.model.Teacher;
 import com.springboot.practice.repository.CourseRepository;
 import com.springboot.practice.repository.TeacherRepository;
-import com.springboot.practice.unit.service.TeacherService;
-import com.springboot.practice.unit.service.criteria.TeacherSortingCriteria;
+import com.springboot.practice.service.criteria.TeacherSortingCriteria;
+import com.springboot.practice.service.TeacherService;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
 import org.slf4j.Logger;

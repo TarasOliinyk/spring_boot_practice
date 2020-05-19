@@ -1,4 +1,4 @@
-package com.springboot.practice.unit.service;
+package com.springboot.practice.service;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.springboot.practice.dto.CourseDTO;
@@ -7,8 +7,8 @@ import com.springboot.practice.model.Course;
 import com.springboot.practice.model.Teacher;
 import com.springboot.practice.repository.CourseRepository;
 import com.springboot.practice.repository.TeacherRepository;
-import com.springboot.practice.unit.service.criteria.TeacherSortingCriteria;
-import com.springboot.practice.unit.service.implementation.TeacherServiceImpl;
+import com.springboot.practice.service.criteria.TeacherSortingCriteria;
+import com.springboot.practice.service.implementation.TeacherServiceImpl;
 import com.springboot.practice.utils.json.JsonParser;
 import com.springboot.practice.utils.json.supplier.teacher.TeacherJsonData;
 import org.assertj.core.api.Assertions;
