@@ -60,9 +60,16 @@ public class CourseServiceImpl implements CourseService {
 
     @Override
     public CourseDTO updateCourse(CourseDTO courseDTO) {
-        logger.info(String.format("Update course with id %s, updated course: %s", courseDTO.getId(), courseDTO.toString()));
-        Course course = modelMapper.map(courseDTO, Course.class);
-        return modelMapper.map(courseRepository.save(course), CourseDTO.class);
+        Integer courseId = courseDTO.getId();
+        logger.info(String.format("Update course with id %s, updated course: %s", courseId, courseDTO.toString()));
+        Course course = courseRepository.findOneById(courseId).orElse(null);
+
+        if (null != course) {
+            course = modelMapper.map(courseDTO, Course.class);
+            return modelMapper.map(courseRepository.save(course), CourseDTO.class);
+        } else {
+            throw new CourseNotFoundException();
+        }
     }
 
     @Override
@@ -125,8 +132,6 @@ public class CourseServiceImpl implements CourseService {
         logger.info(String.format("Get courses with %s assigned teacher/s", numberOfTeachers));
         Type listType = new TypeToken<List<CourseDTO>>(){}.getType();
         return modelMapper.map(courseRepository.findAllByTeachersCount(numberOfTeachers), listType);
-//        return getAllCourses().stream().filter(course -> course.getTeachers().size() == numberOfTeachers)
-//                .collect(Collectors.toList());
     }
 
     @Override
@@ -194,6 +199,12 @@ public class CourseServiceImpl implements CourseService {
     @Override
     public void deleteCourse(Integer courseId) {
         logger.info("Delete course with id " + courseId);
-        courseRepository.deleteById(courseId);
+        Course course = courseRepository.findOneById(courseId).orElse(null);
+
+        if (null != course) {
+            courseRepository.deleteById(courseId);
+        } else {
+            throw new CourseNotFoundException();
+        }
     }
 }

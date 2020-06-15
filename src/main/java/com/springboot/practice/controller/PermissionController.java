@@ -1,5 +1,6 @@
 package com.springboot.practice.controller;
 
+import com.springboot.practice.data.UserRole;
 import com.springboot.practice.dto.PermissionDTO;
 import com.springboot.practice.service.PermissionService;
 import org.springframework.http.HttpStatus;
@@ -9,9 +10,9 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@PreAuthorize("hasAuthority('WRITE_USER')")
 @RestController
 @RequestMapping("/permissions")
+@PreAuthorize("hasAuthority('" + UserRole.Name.ADMIN + "')")
 public class PermissionController {
     private final PermissionService permissionService;
 
@@ -24,9 +25,9 @@ public class PermissionController {
         return ResponseEntity.status(HttpStatus.CREATED).body(permissionService.createPermission(permissionDTO));
     }
 
-    @GetMapping("/permission/{id}")
+    @GetMapping("/{id}")
     public ResponseEntity<PermissionDTO> getPermission(@PathVariable (name = "id") Integer id) {
-        return ResponseEntity.status(HttpStatus.FOUND).body(permissionService.getPermission(id));
+        return ResponseEntity.status(HttpStatus.FOUND).body(permissionService.getPermissionById(id));
     }
 
     @GetMapping("/list")
@@ -40,7 +41,7 @@ public class PermissionController {
         return ResponseEntity.status(HttpStatus.OK).body(permissionService.updatePermission(permissionDTO));
     }
 
-    @DeleteMapping("/permission/{id}")
+    @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.ACCEPTED)
     public void deletePermission(@PathVariable (name = "id") Integer id) {
         permissionService.deletePermission(id);

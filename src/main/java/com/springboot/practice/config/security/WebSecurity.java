@@ -1,6 +1,5 @@
 package com.springboot.practice.config.security;
 
-import com.springboot.practice.repository.UserRepository;
 import com.springboot.practice.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -18,7 +17,7 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import javax.servlet.http.HttpServletResponse;
 
-import static com.springboot.practice.config.security.SecurityConstants.SIGN_UP_URL;
+import static com.springboot.practice.config.security.SecurityConstants.*;
 
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(
@@ -35,15 +34,14 @@ public class WebSecurity extends WebSecurityConfigurerAdapter {
     private UserService userService;
 
     @Autowired
-    private UserRepository userRepository;
-
-    @Autowired
     private BCryptPasswordEncoder bCryptPasswordEncoder;
 
     @Override
     protected void configure(HttpSecurity httpSecurity) throws Exception {
         httpSecurity.cors().and().csrf().disable()
                 .authorizeRequests().antMatchers(HttpMethod.POST, SIGN_UP_URL).permitAll()
+                .and()
+                .authorizeRequests().antMatchers(SWAGGER_AUTH_WHITELIST).permitAll()
                 .anyRequest().authenticated()
                 .and()
                 .exceptionHandling()
@@ -52,8 +50,8 @@ public class WebSecurity extends WebSecurityConfigurerAdapter {
                     response.getWriter().write(e.getMessage());
                 })
                 .and()
-                .addFilter(new JWTAuthenticationFilter(authenticationManager(), userService, userRepository))
-                .addFilter(new JWTAuthorizationFilter(authenticationManager()))
+                .addFilter(new JWTAuthenticationFilter(authenticationManager(), userService))
+                .addFilter(new JWTAuthorizationFilter(authenticationManager(), userService))
                 // this disables session creation on Spring Security
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
     }

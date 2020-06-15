@@ -1,11 +1,6 @@
 package com.springboot.practice.model;
 
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
-import org.hibernate.annotations.Fetch;
-import org.hibernate.annotations.FetchMode;
+import lombok.*;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -14,21 +9,20 @@ import java.util.List;
 @Entity
 @Data
 @NoArgsConstructor
-@EqualsAndHashCode(exclude = "password")
-@ToString(exclude = "password")
+@EqualsAndHashCode(exclude = {"password", "roles"})
+@ToString(exclude = {"password"})
 public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    public Integer id;
+    private Integer id;
 
     @Column(unique = true, nullable = false)
-    public String username;
+    private String username;
 
     @Column(nullable = false)
-    public String password;
+    private String password;
 
-    @OneToMany(fetch = FetchType.EAGER, mappedBy = "userId")
-    @Fetch(FetchMode.SELECT)
-    public List<Role> roles = new ArrayList<>();
+    @ManyToMany
+    private List<Role> roles = new ArrayList<>();
 }

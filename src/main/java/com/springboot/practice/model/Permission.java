@@ -3,10 +3,14 @@ package com.springboot.practice.model;
 import lombok.*;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Data
 @NoArgsConstructor
+@EqualsAndHashCode(exclude = "roles")
+@ToString(exclude = "roles")
 public class Permission {
 
     @Id
@@ -16,6 +20,6 @@ public class Permission {
     @Column(nullable = false)
     private String name;
 
-    @Column
-    private Integer roleId;
+    @ManyToMany(mappedBy = "permissions")
+    private List<Role> roles = new ArrayList<>();
 }

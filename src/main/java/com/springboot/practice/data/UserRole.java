@@ -1,6 +1,6 @@
 package com.springboot.practice.data;
 
-public enum Role { // ToDo: Should be removed or modified to adapt to new approach with User Permissions
+public enum UserRole {
     ROLE_USER,
     ROLE_STUDENT,
     ROLE_TEACHER,

@@ -8,13 +8,19 @@ public interface RoleService {
 
     RoleDTO createRole(RoleDTO roleDTO);
 
-    RoleDTO getRole(Integer roleId);
+    RoleDTO getRoleById(Integer roleId);
+
+    RoleDTO getRoleByName(String roleName);
 
     List<RoleDTO> getAllRoles();
 
     List<RoleDTO> getRolesWithIds(List<Integer> roleIds);
 
     RoleDTO updateRole(RoleDTO roleDTO);
+
+    RoleDTO addPermissions(Integer roleId, List<Integer> permissionIds);
+
+    RoleDTO removePermissions(Integer roleId, List<Integer> permissionIds);
 
     void deleteRole(Integer roleId);
 }

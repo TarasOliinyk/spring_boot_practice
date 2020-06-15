@@ -12,6 +12,8 @@ public interface RoleRepository extends CrudRepository<Role, Integer> {
 
     Optional<Role> findOneById(Integer id);
 
+    Optional<Role> findOneByName(String roleName);
+
     List<Role> findAll();
 
     List<Role> findAllByIdIn(List<Integer> ids);

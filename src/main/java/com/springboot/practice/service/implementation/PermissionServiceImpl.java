@@ -33,7 +33,7 @@ public class PermissionServiceImpl implements PermissionService {
     }
 
     @Override
-    public PermissionDTO getPermission(Integer permissionId) {
+    public PermissionDTO getPermissionById(Integer permissionId) {
         logger.info("Get permission with id " + permissionId);
         return modelMapper.map(permissionRepository.findOneById(permissionId).orElseThrow(() ->
                 new PermissionNotFoundException("There is no permission with id " + permissionId)), PermissionDTO.class);
@@ -48,15 +48,30 @@ public class PermissionServiceImpl implements PermissionService {
 
     @Override
     public PermissionDTO updatePermission(PermissionDTO permissionDTO) {
-        logger.info(String.format("Update permission with id %s, updated permission %s", permissionDTO.getId(),
+        Integer permissionId = permissionDTO.getId();
+        logger.info(String.format("Update permission with id %s, updated permission: %s", permissionId,
                 permissionDTO.toString()));
-        Permission permission = modelMapper.map(permissionDTO, Permission.class);
-        return modelMapper.map(permissionRepository.save(permission), PermissionDTO.class);
+        Permission permission = permissionRepository.findOneById(permissionId).orElse(null);
+
+        if (null != permission) {
+            permission = modelMapper.map(permissionDTO, Permission.class);
+            return modelMapper.map(permissionRepository.save(permission), PermissionDTO.class);
+        } else {
+            throw new PermissionNotFoundException("Permission cannot be updated. There is no permission with id " +
+                    permissionId);
+        }
     }
 
     @Override
     public void deletePermission(Integer permissionId) {
         logger.info("Delete permission with id " + permissionId);
-        permissionRepository.deleteById(permissionId);
+        Permission permission = permissionRepository.findOneById(permissionId).orElse(null);
+
+        if (null != permission) {
+            permissionRepository.deleteById(permissionId);
+        } else {
+            throw new PermissionNotFoundException("Permission cannot be deleted. There is no permission with id " +
+                    permissionId);
+        }
     }
 }

@@ -37,10 +37,17 @@ public class StudentServiceImpl implements StudentService {
 
     @Override
     public StudentDTO updateStudent(StudentDTO studentDTO) {
-        logger.info(String.format("Update student with id %s, updated student: %s", studentDTO.getId(), studentDTO.toString()));
-        Student student = modelMapper.map(studentDTO, Student.class);
-        return modelMapper.map(studentRepository.save(student), StudentDTO.class);
-    }
+        Integer studentId = studentDTO.getId();
+        logger.info(String.format("Update student with id %s, updated student: %s", studentId, studentDTO.toString()));
+        Student student = studentRepository.findOneById(studentId).orElse(null);
+
+        if (null != student) {
+            student = modelMapper.map(studentDTO, Student.class);
+            return modelMapper.map(studentRepository.save(student), StudentDTO.class);
+        } else {
+            throw new StudentNotFoundException("Student cannot be updated. There is no student with id " + studentId);
+        }
+}
 
     @Override
     public int getNumberOfCoursesAssignedToStudent(Integer studentId) {
@@ -51,6 +58,12 @@ public class StudentServiceImpl implements StudentService {
     @Override
     public void deleteStudent(Integer studentId) {
         logger.info("Delete student with id " + studentId);
-        studentRepository.deleteById(studentId);
+        Student student = studentRepository.findOneById(studentId).orElse(null);
+
+        if (null != student) {
+            studentRepository.deleteById(studentId);
+        } else {
+            throw new StudentNotFoundException("Student cannot be deleted. There is no student with id " + studentId);
+        }
     }
 }

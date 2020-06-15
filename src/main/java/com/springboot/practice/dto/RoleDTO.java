@@ -1,5 +1,7 @@
 package com.springboot.practice.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.springboot.practice.dto.user.UserDTO;
 import lombok.*;
 
 import java.util.ArrayList;
@@ -7,15 +9,16 @@ import java.util.List;
 
 @Data
 @NoArgsConstructor
+@EqualsAndHashCode(exclude = {"users", "permissions"})
+@ToString(exclude = {"users", "permissions"})
 public class RoleDTO {
 
     private Integer id;
 
     private String name;
 
-    // ToDo: Should get rid of this field. Role should be linked to User via OneToMany relation without a hard dependency
-    //  on User (it should be possible to assign same Role to multiple Users)
-    private Integer userId;
+    @JsonIgnore
+    private List<UserDTO> users = new ArrayList<>();
 
     private List<PermissionDTO> permissions = new ArrayList<>();
 }

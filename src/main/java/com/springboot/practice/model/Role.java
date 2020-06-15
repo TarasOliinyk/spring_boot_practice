@@ -1,8 +1,6 @@
 package com.springboot.practice.model;
 
 import lombok.*;
-import org.hibernate.annotations.Fetch;
-import org.hibernate.annotations.FetchMode;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -11,6 +9,8 @@ import java.util.List;
 @Entity
 @Data
 @NoArgsConstructor
+@EqualsAndHashCode(exclude = {"users", "permissions"})
+@ToString(exclude = {"users", "permissions"})
 public class Role {
 
     @Id
@@ -20,10 +20,13 @@ public class Role {
     @Column(nullable = false)
     private String name;
 
-    @Column
-    private Integer userId;
+    @ManyToMany(mappedBy = "roles")
+    private List<User> users = new ArrayList<>();
 
-    @OneToMany(fetch = FetchType.EAGER ,mappedBy = "roleId")
-    @Fetch(FetchMode.SELECT)
+    @ManyToMany
     private List<Permission> permissions = new ArrayList<>();
+
+    public Role(String name) {
+        this.name = name;
+    }
 }

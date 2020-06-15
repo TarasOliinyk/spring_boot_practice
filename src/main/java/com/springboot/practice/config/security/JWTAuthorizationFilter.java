@@ -3,6 +3,7 @@ package com.springboot.practice.config.security;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.DecodedJWT;
+import com.springboot.practice.service.UserService;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -15,14 +16,15 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static com.springboot.practice.config.security.SecurityConstants.*;
 
 public class JWTAuthorizationFilter extends BasicAuthenticationFilter {
+    private final UserService userService;
 
-    public JWTAuthorizationFilter(AuthenticationManager authenticationManager) {
+    public JWTAuthorizationFilter(AuthenticationManager authenticationManager, UserService userService) {
         super(authenticationManager);
+        this.userService = userService;
     }
 
     @Override
@@ -48,11 +50,11 @@ public class JWTAuthorizationFilter extends BasicAuthenticationFilter {
                     .verify(header.replace(TOKEN_PREFIX, ""));
             String username = decodedJWT.getSubject();
             Integer userId = decodedJWT.getClaim(USER_ID_PARAM).asInt();
-            List<SimpleGrantedAuthority> userRoles = decodedJWT.getClaim(USER_ROLE_PARAM).asList(String.class).stream()
-                    .map(SimpleGrantedAuthority::new).collect(Collectors.toList());
+
+            List<SimpleGrantedAuthority> userAuthorities = userService.getUserAuthorities(userId);
 
             if (null != username) {
-                return new UsernamePasswordAuthenticationToken(username, userId, userRoles);
+                return new UsernamePasswordAuthenticationToken(username, userId, userAuthorities);
             }
             return null;
         }

@@ -1,12 +1,12 @@
-package com.springboot.practice.annotation;
+package com.springboot.practice.annotation.role;
 
-import com.springboot.practice.data.Role;
+import com.springboot.practice.data.UserRole;
 import org.springframework.security.access.annotation.Secured;
 
 import java.lang.annotation.*;
 
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
-@Secured(Role.Name.TEACHER)
-public @interface IsTeacher {
+@Secured(UserRole.Name.STUDENT)
+public @interface IsStudent {
 }

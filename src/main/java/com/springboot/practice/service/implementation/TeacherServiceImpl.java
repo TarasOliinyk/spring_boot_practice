@@ -95,6 +95,12 @@ public class TeacherServiceImpl implements TeacherService {
     @Override
     public void deleteTeacher(Integer teacherId) {
         logger.info("Delete teacher with id " + teacherId);
-        teacherRepository.deleteById(teacherId);
+        Teacher teacher = teacherRepository.findOneById(teacherId).orElse(null);
+
+        if (null != teacher) {
+            teacherRepository.deleteById(teacherId);
+        } else {
+            throw new TeacherNotFoundException("Teacher cannot be deleted. There is no teacher with id " + teacherId);
+        }
     }
 }

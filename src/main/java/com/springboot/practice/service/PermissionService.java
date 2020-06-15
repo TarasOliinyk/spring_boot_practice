@@ -8,7 +8,7 @@ public interface PermissionService {
 
     PermissionDTO createPermission(PermissionDTO permissionDTO);
 
-    PermissionDTO getPermission(Integer permissionId);
+    PermissionDTO getPermissionById(Integer permissionId);
 
     List<PermissionDTO> getAllPermissions();
 
