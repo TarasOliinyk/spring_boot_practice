@@ -1,28 +1,28 @@
 package com.springboot.practice.model;
 
-import com.springboot.practice.data.Role;
 import lombok.*;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Data
 @NoArgsConstructor
-@EqualsAndHashCode(exclude = "password")
-@ToString(exclude = "password")
+@EqualsAndHashCode(exclude = {"password", "roles"})
+@ToString(exclude = {"password"})
 public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    public Integer id;
+    private Integer id;
 
     @Column(unique = true, nullable = false)
-    public String username;
+    private String username;
 
     @Column(nullable = false)
-    public String password;
+    private String password;
 
-    @Column(nullable = false)
-    @Enumerated(EnumType.STRING)
-    public Role role = Role.ROLE_USER;
+    @ManyToMany
+    private List<Role> roles = new ArrayList<>();
 }

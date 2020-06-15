@@ -1,6 +1,6 @@
 package com.springboot.practice.config.security;
 
-import com.springboot.practice.unit.service.UserService;
+import com.springboot.practice.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.http.HttpMethod;
@@ -17,7 +17,7 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import javax.servlet.http.HttpServletResponse;
 
-import static com.springboot.practice.config.security.SecurityConstants.SIGN_UP_URL;
+import static com.springboot.practice.config.security.SecurityConstants.*;
 
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(
@@ -40,6 +40,8 @@ public class WebSecurity extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity httpSecurity) throws Exception {
         httpSecurity.cors().and().csrf().disable()
                 .authorizeRequests().antMatchers(HttpMethod.POST, SIGN_UP_URL).permitAll()
+                .and()
+                .authorizeRequests().antMatchers(SWAGGER_AUTH_WHITELIST).permitAll()
                 .anyRequest().authenticated()
                 .and()
                 .exceptionHandling()
@@ -49,7 +51,7 @@ public class WebSecurity extends WebSecurityConfigurerAdapter {
                 })
                 .and()
                 .addFilter(new JWTAuthenticationFilter(authenticationManager(), userService))
-                .addFilter(new JWTAuthorizationFilter(authenticationManager()))
+                .addFilter(new JWTAuthorizationFilter(authenticationManager(), userService))
                 // this disables session creation on Spring Security
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
     }

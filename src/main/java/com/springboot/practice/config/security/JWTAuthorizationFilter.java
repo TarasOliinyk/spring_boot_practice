@@ -3,6 +3,7 @@ package com.springboot.practice.config.security;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.DecodedJWT;
+import com.springboot.practice.service.UserService;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -14,18 +15,21 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.Collections;
+import java.util.List;
 
 import static com.springboot.practice.config.security.SecurityConstants.*;
 
 public class JWTAuthorizationFilter extends BasicAuthenticationFilter {
+    private final UserService userService;
 
-    public JWTAuthorizationFilter(AuthenticationManager authenticationManager) {
+    public JWTAuthorizationFilter(AuthenticationManager authenticationManager, UserService userService) {
         super(authenticationManager);
+        this.userService = userService;
     }
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws IOException, ServletException {
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
+            throws IOException, ServletException {
         String header = request.getHeader(HEADER);
 
         if (null == header || !header.startsWith(TOKEN_PREFIX)) {
@@ -41,16 +45,16 @@ public class JWTAuthorizationFilter extends BasicAuthenticationFilter {
         String header = request.getHeader(HEADER);
 
         if (null != header) {
-            // parse the token.
+            // parse the token
             DecodedJWT decodedJWT = JWT.require(Algorithm.HMAC512(SECRET.getBytes())).build()
                     .verify(header.replace(TOKEN_PREFIX, ""));
             String username = decodedJWT.getSubject();
             Integer userId = decodedJWT.getClaim(USER_ID_PARAM).asInt();
-            String userRole = decodedJWT.getClaim(USER_ROLE_PARAM).asString();
+
+            List<SimpleGrantedAuthority> userAuthorities = userService.getUserAuthorities(userId);
 
             if (null != username) {
-                return new UsernamePasswordAuthenticationToken(username, userId,
-                        Collections.singletonList(new SimpleGrantedAuthority(userRole)));
+                return new UsernamePasswordAuthenticationToken(username, userId, userAuthorities);
             }
             return null;
         }

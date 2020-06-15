@@ -1,14 +1,15 @@
 package com.springboot.practice.controller;
 
-import com.springboot.practice.annotation.IsAdmin;
-import com.springboot.practice.data.Role;
+import com.springboot.practice.annotation.permission.teacher.*;
+import com.springboot.practice.annotation.role.IsAdmin;
+import com.springboot.practice.data.UserRole;
 import com.springboot.practice.dto.TeacherDTO;
 import com.springboot.practice.exceptions.teacher.IllegalTeacherSearchException;
-import com.springboot.practice.unit.service.TeacherService;
-import com.springboot.practice.unit.service.criteria.TeacherSortingCriteria;
+import com.springboot.practice.service.TeacherService;
+import com.springboot.practice.service.criteria.TeacherSortingCriteria;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.security.RolesAllowed;
@@ -23,36 +24,32 @@ public class TeacherController {
         this.teacherService = teacherService;
     }
 
-    @IsAdmin
     @PostMapping(path = "/teacher")
+    @HasTeacherCreatePermission
     public ResponseEntity<TeacherDTO> createTeacher(@RequestBody TeacherDTO teacherDTO) {
         return ResponseEntity.status(HttpStatus.CREATED).body(teacherService.createTeacher(teacherDTO));
     }
 
-    @RolesAllowed({Role.Name.STUDENT, Role.Name.TEACHER, Role.Name.ADMIN})
     @GetMapping(path = "/teacher/{id}")
+    @HasTeacherReadPermission
     public ResponseEntity<TeacherDTO> getTeacher(@PathVariable(name = "id") Integer id) {
         return ResponseEntity.status(HttpStatus.FOUND).body(teacherService.getTeacher(id));
     }
 
-    @IsAdmin
     @GetMapping(path = "/teacher/phone_number/{phoneNumber}")
+    @RolesAllowed({UserRole.Name.ADMIN, UserRole.Name.TEACHER})
     public ResponseEntity<TeacherDTO> getTeacherByPhoneNumber(@PathVariable(name = "phoneNumber") String phoneNumber) {
         return ResponseEntity.status(HttpStatus.OK).body(teacherService.getTeacherByPhoneNumber(phoneNumber));
     }
 
-    @RolesAllowed({Role.Name.USER, Role.Name.STUDENT, Role.Name.TEACHER, Role.Name.ADMIN})
     @GetMapping(path = "/teacher/list")
     @ResponseStatus(HttpStatus.FOUND)
-    public List<TeacherDTO> getAllTeachers() {
-        Role userRole = Role.valueOf(SecurityContextHolder.getContext()
-                .getAuthentication()
-                .getAuthorities()
-                .iterator().next().getAuthority());
-
+    @HasTeacherReadPermission
+    public List<TeacherDTO> getAllTeachers(Authentication authentication) {
+        UserRole userRole = UserRole.valueOf(authentication.getAuthorities().iterator().next().getAuthority());
         List<TeacherDTO> teachers = teacherService.getAllTeachers();
 
-        if (userRole.equals(Role.ROLE_USER)) {
+        if (userRole.equals(UserRole.ROLE_USER)) {
             return teachers.stream().map(teacherDTO -> {
                 TeacherDTO teacherForUserRole = new TeacherDTO();
                 teacherForUserRole.setFirstName(teacherDTO.getFirstName());
@@ -64,9 +61,9 @@ public class TeacherController {
         }
     }
 
-    @IsAdmin
     @GetMapping(path = "/teachers/sorted_by_age/{sortingOrder}")
     @ResponseStatus(HttpStatus.OK)
+    @RolesAllowed({UserRole.Name.ADMIN, UserRole.Name.TEACHER})
     public List<TeacherDTO> getAllTeachersSortedByAge(@PathVariable(value = "sortingOrder") String sortingOrder) {
         TeacherSortingCriteria sortingCriteria;
 
@@ -84,16 +81,16 @@ public class TeacherController {
         return teacherService.getAllTeachersSortedBy(sortingCriteria);
     }
 
-    @IsAdmin
     @GetMapping(path = "/teachers/course/{id}")
     @ResponseStatus(HttpStatus.FOUND)
+    @IsAdmin
     public List<TeacherDTO> getAllTeachersAssignedToCourse(@PathVariable(name = "id") Integer id) {
         return teacherService.getAllTeachersAssignedToCourse(id);
     }
 
-    @IsAdmin
     @DeleteMapping(path = "/teacher/{id}")
     @ResponseStatus(HttpStatus.ACCEPTED)
+    @HasTeacherDeletePermission
     public void deleteTeacher(@PathVariable(name = "id") Integer id) {
         teacherService.deleteTeacher(id);
     }
